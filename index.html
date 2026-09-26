@@ -88,6 +88,9 @@ h2 .sub{font-size:14px;font-weight:400;color:var(--ink-2)}
 .due-row .k{font-size:12px;font-weight:700;padding:4px 10px;border-radius:12px;background:var(--line-2);color:var(--navy);white-space:nowrap}
 .due-row .k.pp{background:var(--m1-soft);color:var(--m1)}
 .due-empty{padding:18px 20px;color:var(--ink-2);font-size:14px}
+.due-over{border-top:2px solid var(--line)}
+.due-over summary{cursor:pointer;padding:12px 20px;font-size:14px;font-weight:700;color:var(--bad);background:var(--line-2)}
+.due-over .due-row{opacity:.75}
 @media (max-width:560px){ .due-row{grid-template-columns:80px 1fr} .due-row .k{display:none} }
 
 /* filter */
@@ -186,7 +189,7 @@ select:focus{outline:2px solid var(--orange);outline-offset:1px}
 
   <section id="dueSec">
     <h2><span class="num">00</span>다가오는 리뷰 · 패스포트 마감 <span class="sub">패스포트 시트 기준, 매일 아침 7시 갱신</span></h2>
-    <div class="due" style="margin-top:14px"><div class="due-h">3주 안에 챙길 것<span class="n" id="dueCount"></span></div><div id="dueList"><div class="due-empty">아직 동기화 전입니다. 시트의 멘토링팀 메뉴에서 "지금 동기화"를 누르면 채워집니다.</div></div></div>
+    <div class="due" style="margin-top:14px"><div class="due-h">이번에 챙길 것<span class="n" id="dueCount"></span></div><div id="dueList"><div class="due-empty">아직 동기화 전입니다. 시트의 멘토링팀 메뉴에서 "지금 동기화"를 누르면 채워집니다.</div></div></div>
   </section>
 
   <section>
@@ -426,9 +429,14 @@ function applyTaskRows(rows){
 function renderDue(rows){
   const box=document.getElementById('dueList'); const cnt=document.getElementById('dueCount');
   if(!rows||!rows.length){box.innerHTML='<div class="due-empty">3주 안에 예정된 리뷰·마감이 없습니다.</div>';cnt.textContent='';return;}
-  cnt.textContent=rows.length+'건';
+  const up=rows.filter(r=>r.days_left>=0).sort((a,b)=>a.days_left-b.days_left);
+  const over=rows.filter(r=>r.days_left<0).sort((a,b)=>b.days_left-a.days_left);
+  cnt.textContent=`다가오는 ${up.length}건 · 지난 ${over.length}건`;
   const lab=n=>n<0?`${-n}일 지남`:n===0?'오늘':`D-${n}`;
-  box.innerHTML=rows.map(r=>`<div class="due-row"><div class="d ${r.days_left<0?'over':r.days_left<=7?'soon':''}">${lab(r.days_left)}</div><div class="t">${esc(r.name)}<small>${esc(r.due)}</small></div><span class="k ${r.kind.includes('패스포트')?'pp':''}">${esc(r.kind)}</span></div>`).join('');
+  const row=r=>`<div class="due-row"><div class="d ${r.days_left<0?'over':r.days_left<=7?'soon':''}">${lab(r.days_left)}</div><div class="t">${esc(r.name)}<small>${esc(r.due)}</small></div><span class="k ${r.kind.includes('패스포트')?'pp':''}">${esc(r.kind)}</span></div>`;
+  let html=up.length?up.map(row).join(''):'<div class="due-empty">3주 안에 예정된 리뷰·마감이 없습니다.</div>';
+  if(over.length) html+=`<details class="due-over"><summary>지난 것 ${over.length}건 — 끝난 리뷰는 시트에 O 입력하면 사라짐</summary>${over.map(row).join('')}</details>`;
+  box.innerHTML=html;
 }
 async function loadDue(){
   if(!online()) return;
