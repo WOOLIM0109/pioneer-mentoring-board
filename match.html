@@ -60,22 +60,26 @@ async function load(){
     const json=JSON.parse(txt.substring(txt.indexOf('{'),txt.lastIndexOf('}')+1));
     const rows=json.table.rows.map(r=>(r.c||[]).map(c=>c?(c.f!==undefined&&c.v instanceof Object?c.f:c.v):null));
     // 헤더 행 찾기
-    const hi=rows.findIndex(r=>r.some(v=>norm(v).includes('가입날짜')));
-    if(hi<0) throw new Error('헤더(가입날짜)를 찾지 못함');
+    const hi=rows.findIndex(r=>r.some(v=>norm(v)==='이름')&&r.some(v=>norm(v)==='멘토'));
+    if(hi<0) throw new Error('헤더(이름·멘토)를 찾지 못함');
     const H=rows[hi].map(norm);
-    const ci=(k,exact)=>{let i=H.indexOf(k); if(i<0&&!exact) i=H.findIndex(h=>h.includes(k)); return i;};
-    const cName=ci('이름',true), cJoin=ci('가입날짜'), cMentor=H.indexOf('멘토');
+    const cName=H.indexOf('이름'), cMentor=H.indexOf('멘토');
+    // 가입날짜: 이름 오른쪽에서 날짜값이 들어 있는 첫 열
+    const data=rows.slice(hi+1);
+    let cJoin=-1; for(let c=cName+1;c<H.length&&cJoin<0;c++){ if(data.some(r=>/^Date\(/.test(String(r[c])))) cJoin=c; }
+    if(cJoin<0) throw new Error('가입날짜 열을 찾지 못함');
     const today=new Date(); const cutoff=new Date(today); cutoff.setMonth(cutoff.getMonth()-MONTHS);
+    const soon=new Date(today); soon.setDate(soon.getDate()+60);
     const parseDate=v=>{ if(!v) return null; const m=String(v).match(/Date\((\d+),(\d+),(\d+)/); if(m) return new Date(+m[1],+m[2],+m[3]); const d=new Date(String(v).replace(/\./g,'-')); return isNaN(d)?null:d; };
-    const items=rows.slice(hi+1).map(r=>({name:norm(r[cName]),mentor:String(r[cMentor]||'').trim(),join:parseDate(r[cJoin])}))
-      .filter(x=>x.name&&x.join&&x.join>=cutoff&&x.join<=today).sort((a,b)=>b.join-a.join);
+    const items=data.map(r=>({name:norm(r[cName]),mentor:String(r[cMentor]||'').trim(),join:parseDate(r[cJoin])}))
+      .filter(x=>x.name&&x.join&&x.join>=cutoff&&x.join<=soon).sort((a,b)=>b.join-a.join);
     if(!items.length){list.innerHTML='<div class="empty">표시할 신규 멤버가 없습니다.</div>';}
-    else list.innerHTML=items.map(x=>`<div class="row"><div class="mentee">${esc(x.name)}<small>${x.join.getMonth()+1}/${x.join.getDate()} 입회</small></div><div class="arr">→</div><div class="mentor">${x.mentor?esc(x.mentor):'<span style="color:#C0392B;font-size:18px">멘토 미지정</span>'}</div></div>`).join('');
+    else list.innerHTML=items.map(x=>`<div class="row"><div class="mentee">${esc(x.name)}<small>${x.join.getMonth()+1}/${x.join.getDate()} ${x.join>today?'입회 예정':'입회'}</small></div><div class="arr">→</div><div class="mentor">${x.mentor?esc(x.mentor):'<span style="color:#C0392B;font-size:18px">멘토 미지정</span>'}</div></div>`).join('');
     st.textContent=`시트 기준 ${items.length}명 · 최신`;
   }catch(e){
     console.error(e);
     st.textContent='시트를 읽지 못했습니다';
-    list.innerHTML='<div class="empty">시트를 읽지 못했습니다. 시트 공유가 "링크가 있는 모든 사용자 – 뷰어"인지 확인해 주세요.</div>';
+    list.innerHTML='<div class="empty">시트를 읽지 못했습니다. 시트 공유가 "링크가 있는 모든 사용자"인지 확인해 주세요.</div>';
   }
 }
 load();
