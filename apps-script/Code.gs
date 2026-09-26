@@ -75,7 +75,7 @@ function ensureTeamSheet() {
     t = ss().insertSheet(CFG.TEAM_SHEET);
     t.getRange(1, 1, 1, 3).setValues([['역할', '이름', '이메일(구글 계정)']]).setFontWeight('bold').setBackground('#E4E9F4');
     t.getRange(2, 1, 4, 2).setValues([['팀장', '박선영'], ['팀원 1', '박미성'], ['팀원 2', '이도현'], ['121마스터', '송승훈']]);
-    t.getRange(7, 1).setValue('※ 이메일을 채우면 다음 실행 때 팀 캘린더가 자동 공유됩니다.').setFontColor('#5F6880');
+    t.getRange(7, 1).setValue('※ 이메일을 채우고 "멘토링팀 → 지금 동기화"를 누르면 모든 일정에 초대(게스트)로 들어갑니다.').setFontColor('#5F6880');
     t.setColumnWidth(3, 260);
   }
 }
@@ -148,6 +148,10 @@ function daily() {
     if (w.date > horizon) return; // 아직 멀면 생성하지 않음
     const ok = evs.find(e => fmt(e.getAllDayStartDate()) === fmt(w.date));
     evs.forEach(e => { if (e !== ok) e.deleteEvent(); }); // 날짜 바뀐 옛 일정 정리
+    if (ok && guests.length) { // 이미 있는 일정에도 새 팀원 이메일 초대
+      const have = ok.getGuestList().map(g => g.getEmail().toLowerCase());
+      guests.forEach(g => { if (!have.includes(g.toLowerCase())) { try { ok.addGuest(g); } catch (err) {} } });
+    }
     if (!ok) {
       const e = cal.createAllDayEvent(w.title, w.date, { description: `${w.name} · ${w.kind}\n시트에서 완료 처리하면 자동 삭제됩니다.` });
       e.removeAllReminders();
