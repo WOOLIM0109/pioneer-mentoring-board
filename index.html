@@ -57,11 +57,12 @@ h2 .sub{font-size:14px;font-weight:400;color:var(--ink-2)}
 .role .count b{font-size:22px;color:var(--rc);font-variant-numeric:tabular-nums;margin-right:2px}
 
 /* links */
-.links{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.links{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .link{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
 .link .top{display:flex;align-items:center;gap:8px}
 .link .ic{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;font-size:15px;font-weight:900;color:#fff;background:var(--orange);flex:none}
 .link .ic.drive{background:var(--m2)}
+.link .ic.match{background:var(--m3)}
 .link .lb{font-size:12px;color:var(--ink-2);letter-spacing:.04em}
 .link a.go{font-size:16px;font-weight:700;color:var(--navy);text-decoration:none;display:flex;align-items:center;gap:6px}
 .link a.go:hover{text-decoration:underline}
@@ -73,7 +74,7 @@ h2 .sub{font-size:14px;font-weight:400;color:var(--ink-2)}
 .link .form input{font:inherit;font-size:13px;flex:1;min-width:160px;padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink)}
 .link .form .btn{padding:8px 14px;font-size:13px}
 .link .form .btn.ghost{background:transparent;color:var(--ink-2);border:1px solid var(--line)}
-@media (max-width:560px){ .links{grid-template-columns:1fr} }
+@media (max-width:760px){ .links{grid-template-columns:1fr} }
 
 /* due list */
 .due{background:var(--paper);border:1px solid var(--line);border-radius:8px;overflow:hidden}
@@ -448,6 +449,7 @@ async function loadAll(){
 // ---- links ----
 const LINKS=[
  {key:'sheet',ic:'S',cls:'',label:'패스포트 · 리뷰 관리 시트',url:'https://docs.google.com/spreadsheets/d/1fKbObyuJFYBVDQcQu5KQmmHySIuVblZJBxic-7mIr-M/edit?gid=0#gid=0'},
+ {key:'match',ic:'M',cls:'match',label:'멘토 · 멘티 매칭 장표',url:'./match.html',fixed:true},
  {key:'drive',ic:'D',cls:'drive',label:'구글드라이브 (서류첩)',url:'https://drive.google.com/drive/folders/1nhW9ofHucj1niwZOk8agFLXFd61XDsJJ?usp=sharing'},
 ];
 let links=LINKS.map(l=>({...l})); let editingLink=null;
@@ -456,7 +458,7 @@ function renderLinks(){
     const ed=editingLink===l.key;
     return `<div class="link"><div class="top"><span class="ic ${l.cls}">${l.ic}</span><div><div class="lb">${esc(l.label)}</div>
       ${ed?'':(l.url?`<a class="go" href="${esc(l.url)}" target="_blank" rel="noopener">열기 <span class="arr">↗</span></a>`:`<div class="none">링크 준비 중</div>`)}</div>
-      ${ed?'':`<button type="button" class="edit" data-edit="${l.key}">${l.url?'링크 수정':'링크 넣기'}</button>`}</div>
+      ${ed||l.fixed?'':`<button type="button" class="edit" data-edit="${l.key}">${l.url?'링크 수정':'링크 넣기'}</button>`}</div>
       ${ed?`<div class="form"><input id="lk-${l.key}" placeholder="https:// 로 시작하는 주소 붙여넣기" value="${esc(l.url)}" aria-label="주소"><button type="button" class="btn" data-savelink="${l.key}">저장</button><button type="button" class="btn ghost" data-cancellink="1">취소</button></div>`:''}
     </div>`;}).join('');
   if(editingLink){const i=$('#lk-'+editingLink); if(i) i.focus();}
