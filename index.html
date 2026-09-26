@@ -193,8 +193,8 @@ select:focus{outline:2px solid var(--orange);outline-offset:1px}
   </section>
 
   <section>
-    <h2><span class="num">01</span>누가 무엇을 맡나 <span class="sub">21개 업무 · 담당 1명 + 함께하는 사람</span></h2>
-    <p class="lead-p">왼쪽 색 상자를 눌러 담당을 바꿉니다. 함께할 사람은 이름표를 눌러 켜고 끄고, 메모도 같이 저장됩니다.</p>
+    <h2><span class="num">01</span>누가 무엇을 맡나 <span class="sub">21개 업무 · 담당 1명</span></h2>
+    <p class="lead-p">왼쪽 색 상자를 눌러 담당을 바꿉니다. 메모도 같이 저장됩니다.</p>
     <div class="filter" id="filter">
       <button type="button" class="fbtn on" data-f="all">전체 보기</button>
       <button type="button" class="fbtn lead" data-f="lead">팀장</button>
@@ -300,7 +300,7 @@ function renderRoles(){
         <div class="tag">${r.label}</div>
         <input id="name-${r.key}" placeholder="이름 입력" aria-label="${r.label} 이름" autocomplete="off">
         <div class="desc">${r.desc}</div>
-        <div class="count"><b id="cnt-${r.key}">0</b>건 담당 · <span id="sup-${r.key}">0</span>건 함께</div>
+        <div class="count"><b id="cnt-${r.key}">0</b>건 담당</div>
       </div>`).join('');
     box.dataset.built='1';
     Object.keys(ROLES).forEach(k=>{
@@ -311,7 +311,6 @@ function renderRoles(){
   Object.keys(ROLES).forEach(k=>{
     const inp=$('#name-'+k); if(document.activeElement!==inp && inp.value!==names[k]) inp.value=names[k]||'';
     $('#cnt-'+k).textContent=tasks.filter(t=>t.owner===k).length;
-    $('#sup-'+k).textContent=tasks.filter(t=>t.support.includes(k)).length;
     const fb=document.querySelector('.fbtn[data-f="'+k+'"]'); if(fb) fb.textContent=label(k);
   });
 }
@@ -323,7 +322,7 @@ function renderTable(){
     const rows=tasks.filter(t=>t.area===a);
     html+=`<div class="area"><div class="area-h"><span class="k">${a}</span>${AREAS[a]}<span class="n">${rows.length}건</span></div>`;
     for(const t of rows){
-      const dim=filterKey!=='all'&&t.owner!==filterKey&&!t.support.includes(filterKey);
+      const dim=filterKey!=='all'&&t.owner!==filterKey;
       html+=`<div class="row ${dim?'dim':''}" data-id="${t.id}">
         <div class="l1">
           <select class="owner ${t.owner}" data-owner="${t.id}" aria-label="담당">${Object.keys(ROLES).map(k=>`<option value="${k}" ${k===t.owner?'selected':''}>${esc(label(k))}</option>`).join('')}</select>
@@ -331,7 +330,6 @@ function renderTable(){
         </div>
         <div class="l2">
           <span class="when ${t.custom?'custom':''}">${esc(t.when)}</span>
-          <div class="sup"><span class="lb">함께</span>${Object.keys(ROLES).filter(k=>k!==t.owner).map(k=>`<button type="button" class="chip ${k} ${t.support.includes(k)?'on':''}" data-sup="${t.id}" data-role="${k}">${esc(label(k))}</button>`).join('')}</div>
           <input class="memo" data-note="${t.id}" value="${esc(t.note||'')}" placeholder="메모" aria-label="메모">
           ${t.custom?`<button type="button" class="del" data-del="${t.id}" title="삭제" aria-label="삭제">✕</button>`:''}
         </div>
