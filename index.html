@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>파이오니아 멘토링팀 9기 분담표</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<style>
+:root{
+  --navy:#1B2A4A; --orange:#F07C1C;
+  --bg:#F3F5F9; --paper:#FFFFFF; --ink:#141A2B; --ink-2:#5F6880; --line:#D8DEE9; --line-2:#ECEFF5;
+  --lead:#1B2A4A; --m1:#E8700F; --m2:#25835F; --m3:#7A3FB0;
+  --lead-soft:#E4E9F4; --m1-soft:#FFEEDD; --m2-soft:#DFF3E9; --m3-soft:#EFE4FA;
+  --ok:#25835F; --warn:#C9A227; --bad:#C0392B; --onDark:#FFFFFF;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --navy:#DCE4F5; --orange:#FF9A4A;
+    --bg:#10141D; --paper:#1A1F2B; --ink:#EEF1F7; --ink-2:#A9B2C5; --line:#303849; --line-2:#242B3B;
+    --lead:#A9BBE0; --m1:#FF9A4A; --m2:#5FC59A; --m3:#C39BF0;
+    --lead-soft:#252D42; --m1-soft:#3A2A1A; --m2-soft:#1B3328; --m3-soft:#2E2340; --onDark:#10141D;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --navy:#DCE4F5; --orange:#FF9A4A;
+  --bg:#10141D; --paper:#1A1F2B; --ink:#EEF1F7; --ink-2:#A9B2C5; --line:#303849; --line-2:#242B3B;
+  --lead:#A9BBE0; --m1:#FF9A4A; --m2:#5FC59A; --m3:#C39BF0;
+  --lead-soft:#252D42; --m1-soft:#3A2A1A; --m2-soft:#1B3328; --m3-soft:#2E2340; --onDark:#10141D;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:"Noto Sans KR","Malgun Gothic","맑은 고딕",system-ui,sans-serif;font-size:16px;line-height:1.6;padding-inline:16px;padding-block:0 60px}
+.wrap{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:44px}
+h1,h2{margin:0;line-height:1.25;text-wrap:balance}
+h1{font-size:28px;font-weight:900;color:var(--navy)}
+h2{font-size:22px;font-weight:900;color:var(--navy);display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+h2 .num{font-size:13px;color:var(--orange);letter-spacing:.1em}
+h2 .sub{font-size:14px;font-weight:400;color:var(--ink-2)}
+.lead-p{margin:8px 0 16px;color:var(--ink-2);font-size:15px}
+.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);font-weight:700}
+
+/* header */
+.head{padding-block:28px 0;display:flex;flex-direction:column;gap:18px}
+.head-top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.head-top p{margin:4px 0 0;color:var(--ink-2);font-size:14px}
+.status{font-size:13px;color:var(--ink-2);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.status .dot{width:9px;height:9px;border-radius:50%;background:var(--line);display:inline-block}
+.status.ok .dot{background:var(--ok)} .status.busy .dot{background:var(--warn)} .status.off .dot{background:var(--bad)}
+.roles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.role{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;border-top:5px solid var(--rc)}
+.role .tag{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--rc)}
+.role input{font:inherit;font-size:22px;font-weight:900;color:var(--ink);background:transparent;border:0;border-bottom:1px dashed var(--line);padding:0 0 4px;width:100%;outline:none}
+.role input:focus{border-bottom-color:var(--rc)}
+.role .desc{font-size:13px;color:var(--ink-2);line-height:1.5}
+.role .count{font-size:13px;color:var(--ink-2);margin-top:4px}
+.role .count b{font-size:22px;color:var(--rc);font-variant-numeric:tabular-nums;margin-right:2px}
+
+/* links */
+.links{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.link{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.link .top{display:flex;align-items:center;gap:8px}
+.link .ic{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;font-size:15px;font-weight:900;color:#fff;background:var(--orange);flex:none}
+.link .ic.drive{background:var(--m2)}
+.link .lb{font-size:12px;color:var(--ink-2);letter-spacing:.04em}
+.link a.go{font-size:16px;font-weight:700;color:var(--navy);text-decoration:none;display:flex;align-items:center;gap:6px}
+.link a.go:hover{text-decoration:underline}
+.link a.go .arr{font-size:13px;color:var(--orange)}
+.link .none{font-size:15px;font-weight:700;color:var(--ink-2)}
+.link .edit{margin-left:auto;font:inherit;font-size:12px;padding:5px 10px;border:1px solid var(--line);border-radius:14px;background:transparent;color:var(--ink-2);cursor:pointer;flex:none}
+.link .edit:hover{border-color:var(--orange);color:var(--orange)}
+.link .form{display:flex;gap:6px;flex-wrap:wrap}
+.link .form input{font:inherit;font-size:13px;flex:1;min-width:160px;padding:8px 10px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink)}
+.link .form .btn{padding:8px 14px;font-size:13px}
+.link .form .btn.ghost{background:transparent;color:var(--ink-2);border:1px solid var(--line)}
+@media (max-width:560px){ .links{grid-template-columns:1fr} }
+
+/* filter */
+.filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.fbtn{font:inherit;font-size:14px;font-weight:700;padding:9px 18px;border-radius:22px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink-2);cursor:pointer}
+.fbtn.on{background:var(--navy);border-color:var(--navy);color:var(--onDark)}
+.fbtn.lead.on{background:var(--lead);border-color:var(--lead)} .fbtn.m1.on{background:var(--m1);border-color:var(--m1)}
+.fbtn.m2.on{background:var(--m2);border-color:var(--m2)} .fbtn.m3.on{background:var(--m3);border-color:var(--m3)}
+
+/* task list */
+.list{display:flex;flex-direction:column;gap:24px}
+.area{background:var(--paper);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.area-h{display:flex;align-items:baseline;gap:12px;padding:14px 20px;background:var(--navy);color:var(--onDark);font-size:17px;font-weight:900}
+.area-h .k{color:var(--orange);font-size:14px;letter-spacing:.12em}
+.area-h .n{margin-left:auto;font-size:13px;font-weight:400;opacity:.85}
+.row{padding:18px 20px;border-top:1px solid var(--line-2);display:flex;flex-direction:column;gap:12px}
+.row:first-of-type{border-top:0}
+.row.dim{opacity:.3}
+.l1{display:grid;grid-template-columns:132px 1fr;gap:14px;align-items:start}
+.nm{font-size:17px;font-weight:700;line-height:1.45;color:var(--ink);padding-top:6px}
+.l2{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-left:146px}
+.when{font-size:13px;font-weight:700;color:var(--navy);background:var(--line-2);padding:4px 10px;border-radius:4px;white-space:nowrap}
+.when.custom{background:var(--m1-soft);color:var(--m1)}
+.sup{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.sup .lb{font-size:13px;color:var(--ink-2);margin:0 2px 0 6px}
+.chip{font:inherit;font-size:13px;font-weight:700;padding:6px 12px;border:1.5px solid var(--line);border-radius:16px;background:transparent;color:var(--ink-2);cursor:pointer;line-height:1.2}
+.chip.on.lead{background:var(--lead-soft);border-color:var(--lead);color:var(--lead)}
+.chip.on.m1{background:var(--m1-soft);border-color:var(--m1);color:var(--m1)}
+.chip.on.m2{background:var(--m2-soft);border-color:var(--m2);color:var(--m2)}
+.chip.on.m3{background:var(--m3-soft);border-color:var(--m3);color:var(--m3)}
+.chip:focus-visible,.fbtn:focus-visible{outline:2px solid var(--orange);outline-offset:1px}
+.memo{font:inherit;font-size:13px;flex:1;min-width:140px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);padding:7px 10px;outline:none}
+.memo:focus{border-color:var(--orange)}
+.del{border:0;background:transparent;color:var(--ink-2);cursor:pointer;font-size:16px;padding:2px 6px}
+.del:hover{color:var(--bad)}
+select.owner{font:inherit;font-size:15px;font-weight:900;padding:10px 30px 10px 12px;border:2px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 14px) 55%,calc(100% - 9px) 55%;background-size:5px 5px;background-repeat:no-repeat;width:100%;cursor:pointer;line-height:1.2}
+select.owner.lead{border-color:var(--lead);color:var(--lead);background-color:var(--lead-soft)}
+select.owner.m1{border-color:var(--m1);color:var(--m1);background-color:var(--m1-soft)}
+select.owner.m2{border-color:var(--m2);color:var(--m2);background-color:var(--m2-soft)}
+select.owner.m3{border-color:var(--m3);color:var(--m3);background-color:var(--m3-soft)}
+select:focus{outline:2px solid var(--orange);outline-offset:1px}
+.addrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:14px;margin-top:16px;border:1px dashed var(--line);border-radius:8px;background:var(--paper)}
+.addrow input,.addrow select{font:inherit;font-size:14px;padding:9px 10px;border:1px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink)}
+.addrow input{min-width:160px;flex:1}
+.btn{font:inherit;font-size:14px;font-weight:700;padding:10px 18px;border:0;border-radius:4px;background:var(--orange);color:#fff;cursor:pointer}
+
+/* flow (vertical) */
+.flow{background:var(--paper);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.step{display:grid;grid-template-columns:100px 1fr;gap:14px;padding:14px 20px;border-top:1px solid var(--line-2);align-items:start}
+.step:first-child{border-top:0}
+.step .d{font-size:14px;font-weight:900;color:var(--orange);padding-top:3px;font-variant-numeric:tabular-nums}
+.step .t{font-size:16px;font-weight:700;color:var(--navy)}
+.step .sub{font-size:13px;color:var(--ink-2);margin-top:2px}
+.step .who{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.who span{font-size:13px;font-weight:700;padding:3px 10px;border-radius:4px}
+.who .lead{background:var(--lead-soft);color:var(--lead)} .who .m1{background:var(--m1-soft);color:var(--m1)}
+.who .m2{background:var(--m2-soft);color:var(--m2)} .who .m3{background:var(--m3-soft);color:var(--m3)}
+
+/* months & weekly */
+.months{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.mo{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.mo .m{font-size:13px;font-weight:900;color:var(--orange);letter-spacing:.06em}
+.mo .h{font-size:17px;font-weight:900;color:var(--navy)}
+.mo ul{margin:4px 0 0;padding-left:18px;font-size:14px;color:var(--ink-2);line-height:1.7}
+.mo.hl{border-color:var(--orange);border-width:2px}
+.weekly{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.weekly div{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:16px;font-size:15px;line-height:1.6}
+.weekly b{display:block;color:var(--orange);font-size:13px;letter-spacing:.06em;margin-bottom:6px}
+.foot{font-size:13px;color:var(--ink-2);line-height:1.7}
+
+@media (max-width:820px){ .roles{grid-template-columns:repeat(2,1fr)} }
+@media (max-width:560px){
+  .roles{grid-template-columns:1fr}
+  .months,.weekly{grid-template-columns:1fr}
+  .l1{grid-template-columns:110px 1fr}
+  .l2{padding-left:0}
+  h1{font-size:23px}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="head">
+    <div class="head-top">
+      <div>
+        <div class="eyebrow">BNI Pioneer Chapter · Mentoring Team</div>
+        <h1>파이오니아 멘토링팀 9기 분담표</h1>
+        <p>6개월 임기 · 팀장 1명 + 팀원 3명 · 담당자를 바꾸면 모두의 화면에 바로 반영</p>
+      </div>
+      <div class="status" id="status"><span class="dot"></span><span id="statusText">불러오는 중</span></div>
+    </div>
+    <div class="roles" id="roles"></div>
+    <div class="links" id="links"></div>
+  </header>
+
+  <section>
+    <h2><span class="num">01</span>누가 무엇을 맡나 <span class="sub">28개 업무 · 담당 1명 + 함께하는 사람</span></h2>
+    <p class="lead-p">왼쪽 색 상자를 눌러 담당을 바꿉니다. 함께할 사람은 이름표를 눌러 켜고 끄고, 메모도 같이 저장됩니다.</p>
+    <div class="filter" id="filter">
+      <button type="button" class="fbtn on" data-f="all">전체 보기</button>
+      <button type="button" class="fbtn lead" data-f="lead">팀장</button>
+      <button type="button" class="fbtn m1" data-f="m1">팀원 1</button>
+      <button type="button" class="fbtn m2" data-f="m2">팀원 2</button>
+      <button type="button" class="fbtn m3" data-f="m3">121마스터</button>
+    </div>
+    <div class="list" id="tbody"></div>
+    <div class="addrow">
+      <select id="addArea"></select>
+      <input id="addName" placeholder="추가할 업무명" aria-label="추가할 업무명">
+      <input id="addWhen" placeholder="언제 (예: 매주)" style="min-width:110px;flex:0 1 140px" aria-label="시기">
+      <button class="btn" id="addBtn" type="button">업무 추가</button>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">02</span>신규 멤버 한 명이 들어오면 <span class="sub">순서대로 누가 챙기는지 · 위 표와 자동 연동</span></h2>
+    <div class="flow" id="flow" style="margin-top:14px"></div>
+  </section>
+
+  <section>
+    <h2><span class="num">03</span>6개월 동안 달마다 할 일</h2>
+    <div class="months" style="margin-top:14px">
+      <div class="mo hl"><div class="m">1개월차</div><div class="h">넘겨받기 · 준비</div><ul><li>8기 진도표·자료 이관</li><li>패스포트 위원 15명 확정</li><li>8기→9기 리더 인수인계 121 완료 확인</li><li>멘토 명단 정비</li></ul></div>
+      <div class="mo"><div class="m">2개월차</div><div class="h">본격 시작</div><ul><li>신규 멤버 들어오면 02 순서대로 진행</li><li>매주 진도율 점검</li><li>협약식 첫 진행</li></ul></div>
+      <div class="mo"><div class="m">3개월차</div><div class="h">중간 점검</div><ul><li>리더십팀 회의 현황 보고</li><li>늦어지는 멤버·멘토 개별 연락</li><li>오리엔테이션 자료 보완</li></ul></div>
+      <div class="mo"><div class="m">4개월차</div><div class="h">리뷰가 몰리는 달</div><ul><li>90일·150일 리뷰 집중</li><li>210일 대상자 디렉터 연결</li></ul></div>
+      <div class="mo"><div class="m">5개월차</div><div class="h">수료 마무리</div><ul><li>패스포트 100% 수료식</li><li>멘토 교육 마무리</li><li>의장 제출 파일 정리</li></ul></div>
+      <div class="mo hl"><div class="m">6개월차</div><div class="h">다음 팀에 넘기기</div><ul><li>진도표·기록 최신화</li><li>10기 팀에게 설명</li><li>업무 안내 문서 최신본 전달</li></ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="num">04</span>매주 수요일 조찬회의 때 할 일</h2>
+    <div class="weekly" style="margin-top:14px">
+      <div><b>회의 전 (5:30)</b>신규 멤버·가디언에게 입회식 순서 안내. 패스포트 진행 중인 멤버 상태 확인</div>
+      <div><b>회의 중</b>멘토링팀 인사·신규 소개. 협약식·수료식 진행</div>
+      <div><b>회의 직후</b>오리엔테이션 40분 + 멘토 OT 30분. 오티 양식 서명 2부</div>
+      <div><b>회의 없는 날</b>진도표 갱신 → ST 전달. 리뷰 날짜 다가온 멤버에게 알림. 멘토 정하기(주말 전)</div>
+    </div>
+  </section>
+
+  <p class="foot">근거 자료: BNI 코리아 멘토링팀 매뉴얼(2024.10), 파이오니아 7기 멘토링팀 업무 프로세스, 신규 멤버 핸드북·오리엔테이션 보충자료, 파이오니아 패스포트 진도표. 매뉴얼 기준으로 팀장(코디네이터)은 챕터 1년 이상이면서 의장단이 아닌 사람, 멘토는 챕터 6개월 이상·패스포트 마친 사람·한 번에 멘티 2명까지.</p>
+</div>
+
+<script src="config.js"></script>
+<script>
+const ROLES = {
+  lead:{key:'lead',label:'팀장',cls:'lead',def:'박선영',desc:'전체 총괄 · 멘토 정하기 · 리뷰 면담 · 의장단 보고'},
+  m1:{key:'m1',label:'팀원 1',cls:'m1',def:'박미성',desc:'신규 멤버 첫 연락 · 오리엔테이션 · 협약식 · 자료'},
+  m2:{key:'m2',label:'팀원 2',cls:'m2',def:'이도현',desc:'앱·톡방 세팅 · 수료식 · 리뷰 날짜 챙기기 · 명단'},
+  m3:{key:'m3',label:'121마스터',cls:'m3',def:'송승훈',desc:'패스포트 121 순서·진도 · 리더 121 점검 · 121 후기'},
+};
+const AREAS = {A:'신규 멤버 맞이',B:'패스포트 · 121',C:'90 · 150 · 210일 리뷰',D:'멘토 관리',E:'운영 · 보고 · 넘기기'};
+const DEFAULT_TASKS = [
+ {id:'a01',area:'A',name:'승인 당일 첫 연락 (첫 참석일 · 사진 · 상호 · 전문분야 받기, 오리엔테이션 시간 알리기)',when:'승인 당일',owner:'m1',support:['lead']},
+ {id:'a02',area:'A',name:'입회식 장표 정보 ST 전달',when:'승인 후 2일 내',owner:'m1',support:[]},
+ {id:'a03',area:'A',name:'입회식 전날 마지막 안내 (신규 멤버 · 가디언 · 멘토)',when:'D-1',owner:'m1',support:[]},
+ {id:'a04',area:'A',name:'입회식 당일 5:30 도착, 입장·퇴장 순서 알려주기',when:'첫 참석일',owner:'m2',support:['m1']},
+ {id:'a05',area:'A',name:'오리엔테이션 진행 (40분, 발표자료 + 핸드북)',when:'첫 참석일 회의 후',owner:'m1',support:['lead']},
+ {id:'a06',area:'A',name:'원하는 멘토 스타일 듣고 멘토 정하기, 멘토에게 가이드 설명',when:'첫 참석 주 주말 전',owner:'lead',support:[]},
+ {id:'a07',area:'A',name:'앱 가입 · 카페 가입 · 톡방 4개 초대 확인',when:'첫 참석 주',owner:'m2',support:[]},
+ {id:'a08',area:'A',name:'도어퍼슨팀 배정, 5:30 출석 알려주기',when:'첫 참석 주',owner:'m1',support:[]},
+ {id:'a09',area:'A',name:'BNI 커넥트에 멘토·멘티 배정 입력',when:'멘토 지정 직후',owner:'m2',support:[]},
+ {id:'a10',area:'A',name:'멘토·멘티 협약식 (주간회의에서 3명 서명)',when:'멘토 지정 다음 회의',owner:'m1',support:['lead']},
+ {id:'b01',area:'B',name:'패스포트 위원 15명 정하고, 위원별 121 내용 점검',when:'기수 초 1회',owner:'m3',support:['lead']},
+ {id:'b06',area:'B',name:'8기 → 9기 리더 인수인계 121 요청·완료 확인 (의장과 협의)',when:'기수 초, 첫 신규 멤버 전',owner:'m3',support:['lead']},
+ {id:'b07',area:'B',name:'신규 멤버 121 질문지·순서 안내, 121 후기 카페 등록 확인',when:'패스포트 기간 매주',owner:'m3',support:[]},
+ {id:'b02',area:'B',name:'진도표(엑셀) 갱신, 진도율 확인',when:'매주',owner:'m3',support:['m2']},
+ {id:'b03',area:'B',name:'진도율 ST에게 전달, 늦어지는 멤버는 멘토에게 연락',when:'매주',owner:'m3',support:['lead']},
+ {id:'b04',area:'B',name:'패스포트 100% 수료식 (리더방 공지, 30초 소감 부탁)',when:'수료 시',owner:'m2',support:['m3']},
+ {id:'b05',area:'B',name:'전자명함 완성되면 전체 오픈챗에 공유',when:'완성 시',owner:'m2',support:[]},
+ {id:'c01',area:'C',name:'90일 리뷰 (멘토 질문지 받기 → 의장단 1명 + 멘토링팀 1명이 다시 면담)',when:'입회 3개월',owner:'lead',support:['m2']},
+ {id:'c02',area:'C',name:'150일 리뷰 (5개월 양식)',when:'입회 5개월',owner:'lead',support:['m2']},
+ {id:'c03',area:'C',name:'210일 리뷰 대상자에게 알리고 디렉터·앰버서더와 연결',when:'입회 7개월',owner:'m2',support:[]},
+ {id:'c04',area:'C',name:'리뷰 날짜 관리, 대상자에게 미리 알림',when:'매월',owner:'m2',support:[]},
+ {id:'d01',area:'D',name:'멘토 명단 관리 (챕터 6개월 이상 · 패스포트 마친 사람 · 한 번에 2명까지)',when:'상시',owner:'lead',support:[]},
+ {id:'d02',area:'D',name:'멘토 교육, 멘토 가이드대로 하고 있는지 확인',when:'월 1회',owner:'lead',support:['m1']},
+ {id:'d03',area:'D',name:'패스포트 위원 명단 최신화',when:'멤버 변동 시',owner:'m2',support:['m3']},
+ {id:'e01',area:'E',name:'주간회의 때 멘토링팀 체크리스트 확인, 팀 소개 인사',when:'매주',owner:'lead',support:[]},
+ {id:'e02',area:'E',name:'리더십팀 회의 참석, 멘토링 현황 보고',when:'월 1회',owner:'lead',support:[]},
+ {id:'e03',area:'E',name:'의장에게 제출 (수료 파일 · 멘토링 기록)',when:'분기',owner:'lead',support:['m2']},
+ {id:'e04',area:'E',name:'오리엔테이션 자료 · 핸드북 · 업무 안내 문서 고치기',when:'필요 시',owner:'m1',support:[]},
+ {id:'e05',area:'E',name:'다음 기수에 넘길 자료 정리',when:'6개월차',owner:'lead',support:['m1','m2','m3']},
+];
+const FLOW = [
+ {d:'승인 당일',t:'첫 연락',ids:['a01','a02']},
+ {d:'D-1',t:'마지막 안내',ids:['a03']},
+ {d:'첫 참석일',t:'입회식 · 오리엔테이션',ids:['a04','a05','a08']},
+ {d:'주말 전',t:'멘토 정하기 · 세팅',ids:['a06','a09','a07']},
+ {d:'다음 회의',t:'협약식',ids:['a10']},
+ {d:'~60일',t:'교육 · 패스포트 121',ids:['b07','b02','b03']},
+ {d:'90일',t:'90일 리뷰',ids:['c01','c04']},
+ {d:'100%',t:'수료식',ids:['b04','b05']},
+ {d:'150일',t:'150일 리뷰',ids:['c02']},
+ {d:'210일',t:'210일 리뷰 연결',ids:['c03']},
+];
+
+let names = Object.fromEntries(Object.keys(ROLES).map(k=>[k,ROLES[k].def]));
+let tasks = DEFAULT_TASKS.map(t=>({...t,support:[...t.support],note:''}));
+let filterKey='all';
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const label=k=>names[k]&&names[k].trim()?names[k].trim():ROLES[k].label;
+function setStatus(cls,text){$('#status').className='status '+cls;$('#statusText').textContent=text;}
+
+function renderRoles(){
+  const box=$('#roles');
+  if(!box.dataset.built){
+    box.innerHTML=Object.values(ROLES).map(r=>`
+      <div class="role" style="--rc:var(--${r.cls})">
+        <div class="tag">${r.label}</div>
+        <input id="name-${r.key}" placeholder="이름 입력" aria-label="${r.label} 이름" autocomplete="off">
+        <div class="desc">${r.desc}</div>
+        <div class="count"><b id="cnt-${r.key}">0</b>건 담당 · <span id="sup-${r.key}">0</span>건 함께</div>
+      </div>`).join('');
+    box.dataset.built='1';
+    Object.keys(ROLES).forEach(k=>{
+      const inp=$('#name-'+k); let t;
+      inp.addEventListener('input',()=>{names[k]=inp.value;clearTimeout(t);t=setTimeout(saveNames,600);renderAll(false);});
+    });
+  }
+  Object.keys(ROLES).forEach(k=>{
+    const inp=$('#name-'+k); if(document.activeElement!==inp && inp.value!==names[k]) inp.value=names[k]||'';
+    $('#cnt-'+k).textContent=tasks.filter(t=>t.owner===k).length;
+    $('#sup-'+k).textContent=tasks.filter(t=>t.support.includes(k)).length;
+    const fb=document.querySelector('.fbtn[data-f="'+k+'"]'); if(fb) fb.textContent=label(k);
+  });
+}
+
+function renderTable(){
+  const tb=$('#tbody'); const focus=document.activeElement&&document.activeElement.dataset?document.activeElement.dataset.note:null;
+  let html='';
+  for(const a of Object.keys(AREAS)){
+    const rows=tasks.filter(t=>t.area===a);
+    html+=`<div class="area"><div class="area-h"><span class="k">${a}</span>${AREAS[a]}<span class="n">${rows.length}건</span></div>`;
+    for(const t of rows){
+      const dim=filterKey!=='all'&&t.owner!==filterKey&&!t.support.includes(filterKey);
+      html+=`<div class="row ${dim?'dim':''}" data-id="${t.id}">
+        <div class="l1">
+          <select class="owner ${t.owner}" data-owner="${t.id}" aria-label="담당">${Object.keys(ROLES).map(k=>`<option value="${k}" ${k===t.owner?'selected':''}>${esc(label(k))}</option>`).join('')}</select>
+          <div class="nm">${esc(t.name)}</div>
+        </div>
+        <div class="l2">
+          <span class="when ${t.custom?'custom':''}">${esc(t.when)}</span>
+          <div class="sup"><span class="lb">함께</span>${Object.keys(ROLES).filter(k=>k!==t.owner).map(k=>`<button type="button" class="chip ${k} ${t.support.includes(k)?'on':''}" data-sup="${t.id}" data-role="${k}">${esc(label(k))}</button>`).join('')}</div>
+          <input class="memo" data-note="${t.id}" value="${esc(t.note||'')}" placeholder="메모" aria-label="메모">
+          ${t.custom?`<button type="button" class="del" data-del="${t.id}" title="삭제" aria-label="삭제">✕</button>`:''}
+        </div>
+      </div>`;
+    }
+    html+='</div>';
+  }
+  tb.innerHTML=html;
+  if(focus){const el=tb.querySelector(`[data-note="${focus}"]`); if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length);}}
+}
+
+function renderFlow(){
+  $('#flow').innerHTML=FLOW.map(s=>{
+    const its=s.ids.map(id=>tasks.find(t=>t.id===id)).filter(Boolean);
+    const owners=[...new Set(its.map(t=>t.owner))];
+    return `<div class="step"><div class="d">${esc(s.d)}</div><div>
+      <div class="t">${esc(s.t)}</div>
+      <div class="sub">${its.map(t=>esc(t.name.split(' (')[0])).join(' · ')}</div>
+      <div class="who">${owners.map(k=>`<span class="${k}">${esc(label(k))}</span>`).join('')}</div></div></div>`;
+  }).join('');
+}
+function renderAll(table=true){renderRoles(); if(table) renderTable(); renderFlow();}
+
+$('#filter').addEventListener('click',e=>{const b=e.target.closest('.fbtn'); if(!b) return; filterKey=b.dataset.f;
+  document.querySelectorAll('.fbtn').forEach(x=>x.classList.toggle('on',x===b)); renderTable();});
+$('#tbody').addEventListener('change',async e=>{
+  const sel=e.target.closest('select[data-owner]'); if(!sel) return;
+  const t=tasks.find(x=>x.id===sel.dataset.owner); if(!t) return;
+  t.owner=sel.value; t.support=t.support.filter(k=>k!==t.owner); renderAll(); await saveTask(t);
+});
+$('#tbody').addEventListener('click',async e=>{
+  const chip=e.target.closest('.chip[data-sup]');
+  if(chip){const t=tasks.find(x=>x.id===chip.dataset.sup); const k=chip.dataset.role;
+    t.support=t.support.includes(k)?t.support.filter(x=>x!==k):[...t.support,k]; renderAll(); await saveTask(t); return;}
+  const del=e.target.closest('.del[data-del]');
+  if(del){const id=del.dataset.del; tasks=tasks.filter(x=>x.id!==id); renderAll();
+    await deleteTask(id);}
+});
+const noteTimers={};
+$('#tbody').addEventListener('input',e=>{
+  const inp=e.target.closest('input[data-note]'); if(!inp) return;
+  const t=tasks.find(x=>x.id===inp.dataset.note); t.note=inp.value;
+  clearTimeout(noteTimers[t.id]); noteTimers[t.id]=setTimeout(()=>saveTask(t),700);
+});
+$('#addArea').innerHTML=Object.keys(AREAS).map(a=>`<option value="${a}">${a} · ${AREAS[a]}</option>`).join('');
+$('#addBtn').addEventListener('click',async()=>{
+  const name=$('#addName').value.trim(); if(!name){$('#addName').focus();return;}
+  const t={id:'x'+Date.now().toString(36),area:$('#addArea').value,name,when:$('#addWhen').value.trim()||'—',owner:'lead',support:[],note:'',custom:true};
+  tasks.push(t); $('#addName').value='';$('#addWhen').value=''; renderAll(); await saveTask(t);
+});
+
+// ===== 수파베이스 설정: 아래 두 값을 프로젝트 값으로 바꾸세요 (README 참고) =====
+const SUPABASE_URL = window.SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = window.SUPABASE_ANON_KEY || '';
+let sb=null;
+function online(){return !!sb;}
+async function saveTask(t){
+  if(!online()){setStatus('off','저장소 미연결 (설정 필요)');return;}
+  try{setStatus('busy','저장 중');
+    const {error}=await sb.from('board_tasks').upsert({id:t.id,area:t.area,name:t.name,when_:t.when,owner:t.owner,support:t.support,note:t.note||'',custom:!!t.custom,updated_at:new Date().toISOString()});
+    if(error) throw error; setStatus('ok','팀 공유 · 저장됨');
+  }catch(err){console.error(err);setStatus('off','저장 실패');}
+}
+async function deleteTask(id){
+  if(!online()) return;
+  try{setStatus('busy','저장 중');const {error}=await sb.from('board_tasks').delete().eq('id',id);if(error) throw error;setStatus('ok','팀 공유 · 저장됨');}
+  catch(err){console.error(err);setStatus('off','저장 실패');}
+}
+async function saveNames(){
+  if(!online()) return;
+  try{setStatus('busy','저장 중');
+    const rows=Object.keys(ROLES).map(k=>({key:k,name:names[k]||''}));
+    const {error}=await sb.from('board_roles').upsert(rows); if(error) throw error; setStatus('ok','팀 공유 · 저장됨');
+  }catch(err){console.error(err);setStatus('off','저장 실패');}
+}
+async function saveLink(l){
+  if(!online()){setStatus('off','저장소 미연결 (설정 필요)');return;}
+  try{setStatus('busy','저장 중');const {error}=await sb.from('board_links').upsert({key:l.key,url:l.url||''});if(error) throw error;setStatus('ok','팀 공유 · 저장됨');}
+  catch(err){console.error(err);setStatus('off','저장 실패');}
+}
+function applyTaskRows(rows){
+  const byId=new Map(tasks.map(t=>[t.id,t])); const seen=new Set();
+  rows.forEach(v=>{seen.add(v.id); const base=byId.get(v.id);
+    if(base){base.owner=ROLES[v.owner]?v.owner:base.owner; base.support=Array.isArray(v.support)?v.support.filter(k=>ROLES[k]&&k!==base.owner):[]; base.note=v.note||'';}
+    else if(v.custom){tasks.push({id:v.id,area:AREAS[v.area]?v.area:'E',name:String(v.name||'(이름 없음)'),when:String(v.when_||'—'),owner:ROLES[v.owner]?v.owner:'lead',support:Array.isArray(v.support)?v.support.filter(k=>ROLES[k]):[],note:v.note||'',custom:true});}
+  });
+  tasks=tasks.filter(t=>!t.custom||seen.has(t.id));
+}
+async function loadAll(){
+  const [r,t,l]=await Promise.all([sb.from('board_roles').select('*'),sb.from('board_tasks').select('*'),sb.from('board_links').select('*')]);
+  if(r.error||t.error||l.error){console.error(r.error||t.error||l.error);setStatus('off','불러오기 실패 (테이블·권한 확인)');return;}
+  r.data.forEach(v=>{if(ROLES[v.key]&&typeof v.name==='string'&&v.name.trim()) names[v.key]=v.name;});
+  applyTaskRows(t.data);
+  l.data.forEach(v=>{const x=links.find(k=>k.key===v.key); if(x&&typeof v.url==='string') x.url=v.url;});
+  renderAll(!document.activeElement||!document.activeElement.dataset.note); if(!editingLink) renderLinks();
+  setStatus('ok','팀 공유 · 연결됨');
+}
+// ---- links ----
+const LINKS=[
+ {key:'sheet',ic:'S',cls:'',label:'패스포트 · 리뷰 관리 시트',url:'https://docs.google.com/spreadsheets/d/1fKbObyuJFYBVDQcQu5KQmmHySIuVblZJBxic-7mIr-M/edit?gid=0#gid=0'},
+ {key:'drive',ic:'D',cls:'drive',label:'구글드라이브 (서류첩)',url:'https://drive.google.com/drive/folders/1nhW9ofHucj1niwZOk8agFLXFd61XDsJJ?usp=sharing'},
+];
+let links=LINKS.map(l=>({...l})); let editingLink=null;
+function renderLinks(){
+  $('#links').innerHTML=links.map(l=>{
+    const ed=editingLink===l.key;
+    return `<div class="link"><div class="top"><span class="ic ${l.cls}">${l.ic}</span><div><div class="lb">${esc(l.label)}</div>
+      ${ed?'':(l.url?`<a class="go" href="${esc(l.url)}" target="_blank" rel="noopener">열기 <span class="arr">↗</span></a>`:`<div class="none">링크 준비 중</div>`)}</div>
+      ${ed?'':`<button type="button" class="edit" data-edit="${l.key}">${l.url?'링크 수정':'링크 넣기'}</button>`}</div>
+      ${ed?`<div class="form"><input id="lk-${l.key}" placeholder="https:// 로 시작하는 주소 붙여넣기" value="${esc(l.url)}" aria-label="주소"><button type="button" class="btn" data-savelink="${l.key}">저장</button><button type="button" class="btn ghost" data-cancellink="1">취소</button></div>`:''}
+    </div>`;}).join('');
+  if(editingLink){const i=$('#lk-'+editingLink); if(i) i.focus();}
+}
+$('#links').addEventListener('click',async e=>{
+  const ed=e.target.closest('[data-edit]'); if(ed){editingLink=ed.dataset.edit; renderLinks(); return;}
+  if(e.target.closest('[data-cancellink]')){editingLink=null; renderLinks(); return;}
+  const sv=e.target.closest('[data-savelink]');
+  if(sv){const k=sv.dataset.savelink; let url=$('#lk-'+k).value.trim();
+    if(url&&!/^https?:\/\//i.test(url)) url='https://'+url;
+    const l=links.find(x=>x.key===k); l.url=url; editingLink=null; renderLinks();
+    if(db){try{setStatus('busy','저장 중');await db.doc('board/links').set(Object.fromEntries(links.map(x=>[x.key,x.url])));setStatus('ok','팀 공유 · 저장됨');}catch(err){setStatus('off','저장 실패');}}
+    else setStatus('off','이 화면에서는 저장되지 않음');}
+});
+renderLinks();
+
+renderAll();
+(async()=>{
+  if(!SUPABASE_URL||!SUPABASE_ANON_KEY||SUPABASE_URL.includes('xxxx')||!window.supabase){setStatus('off','저장소 미연결 (config.js 설정 필요)');return;}
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  setStatus('busy','불러오는 중');
+  await loadAll();
+  let timer=null; const refresh=()=>{clearTimeout(timer);timer=setTimeout(loadAll,150);};
+  sb.channel('board').on('postgres_changes',{event:'*',schema:'public',table:'board_tasks'},refresh)
+    .on('postgres_changes',{event:'*',schema:'public',table:'board_roles'},refresh)
+    .on('postgres_changes',{event:'*',schema:'public',table:'board_links'},refresh)
+    .subscribe(st=>{if(st==='CHANNEL_ERROR') setStatus('off','실시간 연결 실패 (Realtime 설정 확인)');});
+})();
+</script>
+</body>
+</html>
