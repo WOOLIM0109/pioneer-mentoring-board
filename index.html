@@ -75,6 +75,21 @@ h2 .sub{font-size:14px;font-weight:400;color:var(--ink-2)}
 .link .form .btn.ghost{background:transparent;color:var(--ink-2);border:1px solid var(--line)}
 @media (max-width:560px){ .links{grid-template-columns:1fr} }
 
+/* due list */
+.due{background:var(--paper);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.due-h{display:flex;align-items:baseline;gap:12px;padding:14px 20px;background:var(--orange);color:#fff;font-size:17px;font-weight:900}
+.due-h .n{margin-left:auto;font-size:13px;font-weight:400;opacity:.9}
+.due-row{display:grid;grid-template-columns:96px 1fr auto;gap:12px;align-items:center;padding:12px 20px;border-top:1px solid var(--line-2)}
+.due-row:first-of-type{border-top:0}
+.due-row .d{font-size:14px;font-weight:900;font-variant-numeric:tabular-nums;color:var(--navy)}
+.due-row .d.over{color:var(--bad)} .due-row .d.soon{color:var(--orange)}
+.due-row .t{font-size:16px;font-weight:700}
+.due-row .t small{font-weight:400;color:var(--ink-2);margin-left:6px;font-size:13px}
+.due-row .k{font-size:12px;font-weight:700;padding:4px 10px;border-radius:12px;background:var(--line-2);color:var(--navy);white-space:nowrap}
+.due-row .k.pp{background:var(--m1-soft);color:var(--m1)}
+.due-empty{padding:18px 20px;color:var(--ink-2);font-size:14px}
+@media (max-width:560px){ .due-row{grid-template-columns:80px 1fr} .due-row .k{display:none} }
+
 /* filter */
 .filter{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .fbtn{font:inherit;font-size:14px;font-weight:700;padding:9px 18px;border-radius:22px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink-2);cursor:pointer}
@@ -168,6 +183,11 @@ select:focus{outline:2px solid var(--orange);outline-offset:1px}
     <div class="roles" id="roles"></div>
     <div class="links" id="links"></div>
   </header>
+
+  <section id="dueSec">
+    <h2><span class="num">00</span>다가오는 리뷰 · 패스포트 마감 <span class="sub">패스포트 시트 기준, 매일 아침 7시 갱신</span></h2>
+    <div class="due" style="margin-top:14px"><div class="due-h">3주 안에 챙길 것<span class="n" id="dueCount"></span></div><div id="dueList"><div class="due-empty">아직 동기화 전입니다. 시트의 멘토링팀 메뉴에서 "지금 동기화"를 누르면 채워집니다.</div></div></div>
+  </section>
 
   <section>
     <h2><span class="num">01</span>누가 무엇을 맡나 <span class="sub">27개 업무 · 담당 1명 + 함께하는 사람</span></h2>
@@ -402,6 +422,19 @@ function applyTaskRows(rows){
   });
   tasks=tasks.filter(t=>!t.custom||seen.has(t.id));
 }
+
+function renderDue(rows){
+  const box=document.getElementById('dueList'); const cnt=document.getElementById('dueCount');
+  if(!rows||!rows.length){box.innerHTML='<div class="due-empty">3주 안에 예정된 리뷰·마감이 없습니다.</div>';cnt.textContent='';return;}
+  cnt.textContent=rows.length+'건';
+  const lab=n=>n<0?`${-n}일 지남`:n===0?'오늘':`D-${n}`;
+  box.innerHTML=rows.map(r=>`<div class="due-row"><div class="d ${r.days_left<0?'over':r.days_left<=7?'soon':''}">${lab(r.days_left)}</div><div class="t">${esc(r.name)}<small>${esc(r.due)}</small></div><span class="k ${r.kind.includes('패스포트')?'pp':''}">${esc(r.kind)}</span></div>`).join('');
+}
+async function loadDue(){
+  if(!online()) return;
+  const {data,error}=await sb.from('board_due').select('*').order('days_left',{ascending:true});
+  if(!error) renderDue(data);
+}
 async function loadAll(){
   const [r,t,l]=await Promise.all([sb.from('board_roles').select('*'),sb.from('board_tasks').select('*'),sb.from('board_links').select('*')]);
   if(r.error||t.error||l.error){console.error(r.error||t.error||l.error);setStatus('off','불러오기 실패 (테이블·권한 확인)');return;}
@@ -444,11 +477,12 @@ renderAll();
   if(!SUPABASE_URL||!SUPABASE_ANON_KEY||SUPABASE_URL.includes('xxxx')||!window.supabase){setStatus('off','저장소 미연결 (config.js 설정 필요)');return;}
   sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
   setStatus('busy','불러오는 중');
-  await loadAll();
+  await loadAll(); await loadDue();
   let timer=null; const refresh=()=>{clearTimeout(timer);timer=setTimeout(loadAll,150);};
   sb.channel('board').on('postgres_changes',{event:'*',schema:'public',table:'board_tasks'},refresh)
     .on('postgres_changes',{event:'*',schema:'public',table:'board_roles'},refresh)
     .on('postgres_changes',{event:'*',schema:'public',table:'board_links'},refresh)
+    .on('postgres_changes',{event:'*',schema:'public',table:'board_due'},()=>loadDue())
     .subscribe(st=>{if(st==='CHANNEL_ERROR') setStatus('off','실시간 연결 실패 (Realtime 설정 확인)');});
 })();
 </script>
