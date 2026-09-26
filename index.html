@@ -170,7 +170,7 @@ select:focus{outline:2px solid var(--orange);outline-offset:1px}
   </header>
 
   <section>
-    <h2><span class="num">01</span>누가 무엇을 맡나 <span class="sub">28개 업무 · 담당 1명 + 함께하는 사람</span></h2>
+    <h2><span class="num">01</span>누가 무엇을 맡나 <span class="sub">25개 업무 · 담당 1명 + 함께하는 사람</span></h2>
     <p class="lead-p">왼쪽 색 상자를 눌러 담당을 바꿉니다. 함께할 사람은 이름표를 눌러 켜고 끄고, 메모도 같이 저장됩니다.</p>
     <div class="filter" id="filter">
       <button type="button" class="fbtn on" data-f="all">전체 보기</button>
@@ -208,7 +208,7 @@ select:focus{outline:2px solid var(--orange);outline-offset:1px}
   <section>
     <h2><span class="num">04</span>매주 수요일 조찬회의 때 할 일</h2>
     <div class="weekly" style="margin-top:14px">
-      <div><b>회의 전 (5:30)</b>신규 멤버·가디언에게 입회식 순서 안내. 패스포트 진행 중인 멤버 상태 확인</div>
+      <div><b>회의 전 (6:10)</b>신규 멤버·가디언에게 입회식 순서 안내 (승인일 첫 연락·장표·전날 안내는 ST 담당). 패스포트 진행 중인 멤버 상태 확인</div>
       <div><b>회의 중</b>멘토링팀 인사·신규 소개. 협약식·수료식 진행</div>
       <div><b>회의 직후</b>오리엔테이션 40분 + 멘토 OT 30분. 오티 양식 서명 2부</div>
       <div><b>회의 없는 날</b>진도표 갱신 → ST 전달. 리뷰 날짜 다가온 멤버에게 알림. 멘토 정하기(주말 전)</div>
@@ -228,14 +228,11 @@ const ROLES = {
 };
 const AREAS = {A:'신규 멤버 맞이',B:'패스포트 · 121',C:'90 · 150 · 210일 리뷰',D:'멘토 관리',E:'운영 · 보고 · 넘기기'};
 const DEFAULT_TASKS = [
- {id:'a01',area:'A',name:'승인 당일 첫 연락 (첫 참석일 · 사진 · 상호 · 전문분야 받기, 오리엔테이션 시간 알리기)',when:'승인 당일',owner:'m1',support:['lead']},
- {id:'a02',area:'A',name:'입회식 장표 정보 ST 전달',when:'승인 후 2일 내',owner:'m1',support:[]},
- {id:'a03',area:'A',name:'입회식 전날 마지막 안내 (신규 멤버 · 가디언 · 멘토)',when:'D-1',owner:'m1',support:[]},
- {id:'a04',area:'A',name:'입회식 당일 5:30 도착, 입장·퇴장 순서 알려주기',when:'첫 참석일',owner:'m2',support:['m1']},
+ {id:'a04',area:'A',name:'입회식 당일 6:10 도착, 입장·퇴장 순서 알려주기',when:'첫 참석일',owner:'m2',support:['m1']},
  {id:'a05',area:'A',name:'오리엔테이션 진행 (40분, 발표자료 + 핸드북)',when:'첫 참석일 회의 후',owner:'m1',support:['lead']},
  {id:'a06',area:'A',name:'원하는 멘토 스타일 듣고 멘토 정하기, 멘토에게 가이드 설명',when:'첫 참석 주 주말 전',owner:'lead',support:[]},
  {id:'a07',area:'A',name:'앱 가입 · 카페 가입 · 톡방 4개 초대 확인',when:'첫 참석 주',owner:'m2',support:[]},
- {id:'a08',area:'A',name:'도어퍼슨팀 배정, 5:30 출석 알려주기',when:'첫 참석 주',owner:'m1',support:[]},
+ {id:'a08',area:'A',name:'도어퍼슨팀 배정, 6:10 출석 알려주기',when:'첫 참석 주',owner:'m1',support:[]},
  {id:'a09',area:'A',name:'BNI 커넥트에 멘토·멘티 배정 입력',when:'멘토 지정 직후',owner:'m2',support:[]},
  {id:'a10',area:'A',name:'멘토·멘티 협약식 (주간회의에서 3명 서명)',when:'멘토 지정 다음 회의',owner:'m1',support:['lead']},
  {id:'b01',area:'B',name:'패스포트 위원 15명 정하고, 위원별 121 내용 점검',when:'기수 초 1회',owner:'m3',support:['lead']},
@@ -259,8 +256,6 @@ const DEFAULT_TASKS = [
  {id:'e05',area:'E',name:'다음 기수에 넘길 자료 정리',when:'6개월차',owner:'lead',support:['m1','m2','m3']},
 ];
 const FLOW = [
- {d:'승인 당일',t:'첫 연락',ids:['a01','a02']},
- {d:'D-1',t:'마지막 안내',ids:['a03']},
  {d:'첫 참석일',t:'입회식 · 오리엔테이션',ids:['a04','a05','a08']},
  {d:'주말 전',t:'멘토 정하기 · 세팅',ids:['a06','a09','a07']},
  {d:'다음 회의',t:'협약식',ids:['a10']},
