@@ -193,7 +193,7 @@ select:focus{outline:2px solid var(--orange);outline-offset:1px}
   </section>
 
   <section>
-    <h2><span class="num">01</span>누가 무엇을 맡나 <span class="sub">27개 업무 · 담당 1명 + 함께하는 사람</span></h2>
+    <h2><span class="num">01</span>누가 무엇을 맡나 <span class="sub">21개 업무 · 담당 1명 + 함께하는 사람</span></h2>
     <p class="lead-p">왼쪽 색 상자를 눌러 담당을 바꿉니다. 함께할 사람은 이름표를 눌러 켜고 끄고, 메모도 같이 저장됩니다.</p>
     <div class="filter" id="filter">
       <button type="button" class="fbtn on" data-f="all">전체 보기</button>
@@ -251,40 +251,35 @@ const ROLES = {
 };
 const AREAS = {A:'신규 멤버 맞이',B:'패스포트 · 121',C:'90 · 150 · 210일 리뷰',D:'멘토 관리',E:'운영 · 보고 · 넘기기'};
 const DEFAULT_TASKS = [
- {id:'a04',area:'A',name:'입회식 당일 6:10 도착, 입장·퇴장 순서 알려주기',when:'첫 참석일',owner:'m2',support:['m1']},
- {id:'a05',area:'A',name:'오리엔테이션 진행 (40분, 발표자료 + 핸드북)',when:'첫 참석일 회의 후',owner:'m1',support:['lead']},
+ {id:'a05',area:'A',name:'오리엔테이션 진행 (90분, 발표자료 + 핸드북 + 커넥트 앱 사용 교육)',when:'첫 참석일 회의 후',owner:'m1',support:['lead']},
  {id:'a06',area:'A',name:'원하는 멘토 스타일 듣고 멘토 정하기, 멘토에게 가이드 설명',when:'첫 참석 주 주말 전',owner:'lead',support:[]},
  {id:'a07',area:'A',name:'앱 가입 · 카페 가입 · 톡방 4개 초대 확인',when:'첫 참석 주',owner:'m2',support:[]},
- {id:'a08',area:'A',name:'도어퍼슨팀 배정, 6:10 출석 알려주기',when:'첫 참석 주',owner:'m1',support:[]},
- {id:'a09',area:'A',name:'BNI 커넥트에 멘토·멘티 배정 입력',when:'멘토 지정 직후',owner:'m2',support:[]},
  {id:'a10',area:'A',name:'멘토·멘티 협약식 (주간회의에서 3명 서명)',when:'멘토 지정 다음 회의',owner:'m1',support:['lead']},
  {id:'b01',area:'B',name:'패스포트 위원 15명 정하고, 위원별 121 내용 점검',when:'기수 초 1회',owner:'m3',support:['lead']},
- {id:'b06',area:'B',name:'8기 → 9기 리더 인수인계 121 요청·완료 확인 (의장과 협의)',when:'기수 초, 첫 신규 멤버 전',owner:'m3',support:['lead']},
  {id:'b07',area:'B',name:'신규 멤버 121 질문지·순서 안내, 121 후기 카페 등록 확인',when:'패스포트 기간 매주',owner:'m3',support:[]},
  {id:'b02',area:'B',name:'진도표(엑셀) 갱신, 진도율 확인',when:'매주',owner:'m3',support:['m2']},
- {id:'b03',area:'B',name:'진도율 ST에게 전달, 늦어지는 멤버는 멘토에게 연락',when:'매주',owner:'m3',support:['lead']},
- {id:'b04',area:'B',name:'패스포트 100% 수료식 (리더방 공지, 30초 소감 부탁)',when:'수료 시',owner:'m2',support:['m3']},
- {id:'b05',area:'B',name:'전자명함 완성되면 전체 오픈챗에 공유',when:'완성 시',owner:'m2',support:[]},
- {id:'c01',area:'C',name:'90일 리뷰 (멘토 질문지 받기 → 의장단 1명 + 멘토링팀 1명이 다시 면담)',when:'입회 3개월',owner:'lead',support:['m2']},
- {id:'c02',area:'C',name:'150일 리뷰 (5개월 양식)',when:'입회 5개월',owner:'lead',support:['m2']},
+ {id:'b03',area:'B',name:'진도율 · 전자명함 완성 여부 ST에게 전달 (경청표 반영), 늦어지는 멤버는 멘토에게 연락',when:'매주',owner:'m3',support:['lead']},
+ {id:'b04',area:'B',name:'패스포트 수료식 진행 (30초 소감 부탁)',when:'수료 시',owner:'m2',support:[]},
+ {id:'b08',area:'B',name:'패스포트 수료 리더방 공지',when:'수료 시',owner:'lead',support:[]},
+ {id:'c00',area:'C',name:'30일 리뷰 (멘토 사전미팅 없음 · 멘토 변경 희망 확인)',when:'입회 1개월',owner:'m3',support:['m2']},
+ {id:'c01',area:'C',name:'90일 리뷰 (멘토 사전미팅 → 의장단 1명 + 멘토링팀 1명 면담)',when:'입회 3개월',owner:'m3',support:['m2']},
+ {id:'c02',area:'C',name:'150일 리뷰 (멘토 사전미팅 → 면담, 5개월 양식)',when:'입회 5개월',owner:'lead',support:['m2']},
  {id:'c03',area:'C',name:'210일 리뷰 대상자에게 알리고 디렉터·앰버서더와 연결',when:'입회 7개월',owner:'m2',support:[]},
  {id:'c04',area:'C',name:'리뷰 날짜 관리, 대상자에게 미리 알림',when:'매월',owner:'m2',support:[]},
- {id:'d01',area:'D',name:'멘토 명단 관리 (챕터 6개월 이상 · 패스포트 마친 사람 · 한 번에 2명까지)',when:'상시',owner:'lead',support:[]},
- {id:'d02',area:'D',name:'멘토 교육, 멘토 가이드대로 하고 있는지 확인',when:'월 1회',owner:'lead',support:['m1']},
- {id:'d03',area:'D',name:'패스포트 위원 명단 최신화',when:'멤버 변동 시',owner:'m2',support:['m3']},
- {id:'e01',area:'E',name:'주간회의 때 멘토링팀 체크리스트 확인, 팀 소개 인사',when:'매주',owner:'lead',support:[]},
+ {id:'d01',area:'D',name:'멘토 명단 관리 · 멘토 교육 · 가이드대로 하는지 확인 (멘토 자격: 6개월 이상 · 패스포트 마친 사람 · 한 번에 2명)',when:'상시',owner:'lead',support:[]},
+ {id:'e01',area:'E',name:'주간회의 때 멘토링팀 체크리스트 확인, ST 전달 사항(진도율·전자명함) 확인, 팀 소개 인사',when:'매주',owner:'lead',support:[]},
  {id:'e02',area:'E',name:'리더십팀 회의 참석, 멘토링 현황 보고',when:'월 1회',owner:'lead',support:[]},
- {id:'e03',area:'E',name:'의장에게 제출 (수료 파일 · 멘토링 기록)',when:'분기',owner:'lead',support:['m2']},
  {id:'e04',area:'E',name:'오리엔테이션 자료 · 핸드북 · 업무 안내 문서 고치기',when:'필요 시',owner:'m1',support:[]},
  {id:'e05',area:'E',name:'다음 기수에 넘길 자료 정리',when:'6개월차',owner:'lead',support:['m1','m2','m3']},
 ];
 const FLOW = [
- {d:'첫 참석일',t:'입회식 · 오리엔테이션',ids:['a04','a05','a08']},
- {d:'주말 전',t:'멘토 정하기 · 세팅',ids:['a06','a09','a07']},
+ {d:'첫 참석일',t:'입회식 · 오리엔테이션',ids:['a05']},
+ {d:'주말 전',t:'멘토 정하기 · 세팅',ids:['a06','a07']},
  {d:'다음 회의',t:'협약식',ids:['a10']},
  {d:'~60일',t:'교육 · 패스포트 121',ids:['b07','b02','b03']},
+ {d:'30일',t:'30일 리뷰',ids:['c00']},
  {d:'90일',t:'90일 리뷰',ids:['c01','c04']},
- {d:'100%',t:'수료식',ids:['b04','b05']},
+ {d:'100%',t:'수료식',ids:['b04','b08']},
  {d:'150일',t:'150일 리뷰',ids:['c02']},
  {d:'210일',t:'210일 리뷰 연결',ids:['c03']},
 ];
