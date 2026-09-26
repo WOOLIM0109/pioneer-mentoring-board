@@ -45,7 +45,7 @@ function headerMap() {
   values[hr].forEach((v, c) => { const k = norm(v); if (k && map[k] === undefined) map[k] = c; });
   return { row: hr + 1, map, lastCol: sh.getLastColumn() };
 }
-function col(map, keys) { for (const k of keys) { for (const h in map) if (h.includes(k)) return map[h]; } return -1; }
+function col(map, keys) { for (const k of keys) { if (map[k] !== undefined) return map[k]; } for (const k of keys) { for (const h in map) if (h.includes(k)) return map[h]; } return -1; }
 
 // ---------- 최초 설정 ----------
 function setup() {
@@ -139,6 +139,8 @@ function daily() {
   // 캘린더 동기화 (지난 365일 ~ 앞 400일 범위의 태그 일정만 관리)
   const existing = cal.getEvents(addDays(today, -365), addDays(today, 400)).filter(e => e.getTitle().startsWith(CFG.TAG));
   const byTitle = {}; existing.forEach(e => { (byTitle[e.getTitle()] = byTitle[e.getTitle()] || []).push(e); });
+  const wantedTitles = new Set(wanted.map(w => w.title));
+  existing.forEach(e => { if (!wantedTitles.has(e.getTitle())) e.deleteEvent(); }); // 탈퇴자·명단에 없는 일정 정리
   const horizon = addDays(today, CFG.HORIZON_DAYS);
   wanted.forEach(w => {
     const evs = byTitle[w.title] || [];
@@ -168,10 +170,53 @@ function pushToSupabase(rows) {
   if (rows.length) UrlFetchApp.fetch(CFG.SUPA_URL + '/rest/v1/board_due', { method: 'post', headers, payload: JSON.stringify(rows.map(r => ({ ...r, updated_at: new Date().toISOString() }))), muteHttpExceptions: true });
 }
 
+// ---------- 명단 정리 (경청표 2026-09-23 기준, 1회 실행) ----------
+const ROSTER = ['조현우','심학봉','홍정택','송승훈','박선영','이화춘','박미성','김지현','정명수','김윤호','박진성','이채홍','정상현','권두현','김경태','마루이','이수민','김근우','이소연','이도현','윤민수','최경수','임춘식','이상호','조은영','문성우','이해경','오예준','박지형','박병준','조진성','이훈'];
+const RECENT = { // 이름: [입회일, 멘토]
+  '이도현':['2026-04-18','박진성'], '정상현':['2026-05-06','임춘식'], '마루이':['2026-06-24','송승훈'], '문성우':['2026-06-24','심학봉'],
+  '윤민수':['2026-06-24','박미성'], '이수민':['2026-07-29','홍정택'], '이해경':['2026-08-06','박선영'], '오예준':['2026-09-09','정명수'],
+  '박지형':['2026-09-09','송승훈'], '박병준':['2026-09-09','홍정택'], '조진성':['2026-09-09','이채홍'], '이훈':['2026-09-16','김경태'],
+};
+function cleanupRoster() {
+  const sh = sheet(); const h = headerMap();
+  const cName = col(h.map, ['이름']), cJoin = col(h.map, ['가입날짜']), cMentor = col(h.map, ['멘토']);
+  const cDone = [col(h.map, ['30일완료']), col(h.map, ['90일완료']), col(h.map, ['150일완료']), col(h.map, ['210일완료'])];
+  const today = startOfDay(new Date());
+  const n = sh.getLastRow() - h.row; const rng = sh.getRange(h.row + 1, 1, n, sh.getLastColumn()); const rows = rng.getValues();
+  const removed = [], updated = [], seen = new Set();
+  for (let i = rows.length - 1; i >= 0; i--) {
+    const r = rows[i]; const name = norm(r[cName]); const join = r[cJoin];
+    if (!name) continue;
+    const isMember = ROSTER.includes(name);
+    if (!isMember && !(join instanceof Date && join > today)) { removed.push(name); sh.deleteRow(h.row + 1 + i); continue; }
+    seen.add(name);
+    const rowNo = h.row + 1 + i;
+    if (RECENT[name]) {
+      const [d, m] = RECENT[name];
+      sh.getRange(rowNo, cJoin + 1).setValue(new Date(d + 'T00:00:00+09:00'));
+      if (cMentor >= 0) sh.getRange(rowNo, cMentor + 1).setValue(m);
+      updated.push(name);
+    } else if (join instanceof Date && join < new Date('2026-01-01')) {
+      cDone.forEach(c => { if (c >= 0 && !String(r[c] || '').trim()) sh.getRange(rowNo, c + 1).setValue('O'); });
+    }
+  }
+  // 누락 멤버 추가 (이훈 등)
+  ROSTER.filter(nm => !seen.has(nm)).forEach(nm => {
+    const rowNo = h.row + 1; sh.insertRowBefore(rowNo);
+    sh.getRange(rowNo, cName + 1).setValue(nm);
+    if (RECENT[nm]) { sh.getRange(rowNo, cJoin + 1).setValue(new Date(RECENT[nm][0] + 'T00:00:00+09:00')); if (cMentor >= 0) sh.getRange(rowNo, cMentor + 1).setValue(RECENT[nm][1]); }
+    updated.push(nm + '(추가)');
+  });
+  Logger.log('삭제 ' + removed.length + '명: ' + removed.join(', '));
+  Logger.log('갱신 ' + updated.length + '명: ' + updated.join(', '));
+  daily();
+}
+
 // 시트 상단 메뉴
 function onOpen() {
   SpreadsheetApp.getUi().createMenu('멘토링팀')
     .addItem('지금 동기화 (캘린더·페이지)', 'daily')
     .addItem('최초 설정 다시 실행', 'setup')
+    .addItem('명단 정리 (경청표 기준)', 'cleanupRoster')
     .addToUi();
 }
