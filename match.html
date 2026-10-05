@@ -77,7 +77,8 @@ async function load(){
     const H=rows[hi].map(norm);
     const cName=H.indexOf('이름'), cMentor=H.indexOf('멘토');
     const cPassport=27; // AB열: 패스포트 진도율
-    if(!H[cPassport]?.includes('패스포트')) throw new Error('AB열 패스포트 진도율을 찾지 못함');
+    // gviz는 숫자 열의 텍스트 헤더를 null로 전달할 수 있으므로 열 위치로 확인합니다.
+    if(json.table.cols.length<=cPassport) throw new Error('AB열 패스포트 진도율을 찾지 못함');
     // 가입날짜: 이름 오른쪽에서 날짜값이 들어 있는 첫 열
     const data=rows.slice(hi+1);
     let cJoin=-1; for(let c=cName+1;c<H.length&&cJoin<0;c++){ if(data.some(r=>/^Date\(/.test(String(r[c])))) cJoin=c; }
