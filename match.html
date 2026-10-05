@@ -42,7 +42,7 @@ h1{margin:4px 0 0;font-size:30px;font-weight:900;color:var(--navy)}
   <div class="top"><div><div class="eb">BNI PIONEER · MENTORING TEAM 9기</div><h1>멘토 · 멘티 매칭</h1></div><div class="date" id="date"></div></div>
   <div class="hd"><span>멘티 (신규 멤버)</span><span></span><span>멘토</span></div>
   <div id="list"><div class="empty">불러오는 중…</div></div>
-  <div class="foot"><span>패스포트 관리 시트의 멘토 칸을 바꾸면 이 장표도 바뀝니다</span><span>멘토링 기간: 입회일부터 7개월</span></div>
+  <div class="foot"><span>시트와 1분마다 연동 · 패스포트 100% 완료자는 자동 제외</span><span>멘토링 기간: 입회일부터 7개월</span></div>
 </div>
 <script>
 const SHEET_ID='1fKbObyuJFYBVDQcQu5KQmmHySIuVblZJBxic-7mIr-M';
@@ -51,12 +51,24 @@ const MONTHS=7; // 입회 7개월(210일) 이내만 표시
 const st=document.getElementById('st'), list=document.getElementById('list');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const norm=s=>String(s||'').replace(/\s+/g,'');
+// Google Sheets 백분율은 숫자 1(100%)로 전달되며, 텍스트 백분율도 지원합니다.
+const passportComplete=v=>{
+  if(v===null||v===undefined||norm(v)==='') return false;
+  const value=String(v).replace(/\s+/g,'');
+  const number=Number(value.replace(/%$/,''));
+  return Number.isFinite(number)&&number>=(value.endsWith('%')?100:1);
+};
 document.getElementById('date').textContent=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})+' 기준';
 
+let loading=false;
 async function load(){
+  if(loading) return;
+  loading=true;
   try{
-    const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&headers=0`;
-    const txt=await fetch(url).then(r=>r.text());
+    const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&headers=0&_=${Date.now()}`;
+    const response=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(20000)});
+    if(!response.ok) throw new Error(`시트 응답 오류: ${response.status}`);
+    const txt=await response.text();
     const json=JSON.parse(txt.substring(txt.indexOf('{'),txt.lastIndexOf('}')+1));
     const rows=json.table.rows.map(r=>(r.c||[]).map(c=>c?(c.f!==undefined&&c.v instanceof Object?c.f:c.v):null));
     // 헤더 행 찾기
@@ -64,6 +76,8 @@ async function load(){
     if(hi<0) throw new Error('헤더(이름·멘토)를 찾지 못함');
     const H=rows[hi].map(norm);
     const cName=H.indexOf('이름'), cMentor=H.indexOf('멘토');
+    const cPassport=27; // AB열: 패스포트 진도율
+    if(!H[cPassport]?.includes('패스포트')) throw new Error('AB열 패스포트 진도율을 찾지 못함');
     // 가입날짜: 이름 오른쪽에서 날짜값이 들어 있는 첫 열
     const data=rows.slice(hi+1);
     let cJoin=-1; for(let c=cName+1;c<H.length&&cJoin<0;c++){ if(data.some(r=>/^Date\(/.test(String(r[c])))) cJoin=c; }
@@ -71,18 +85,23 @@ async function load(){
     const today=new Date(); const cutoff=new Date(today); cutoff.setMonth(cutoff.getMonth()-MONTHS);
     const soon=new Date(today); soon.setDate(soon.getDate()+60);
     const parseDate=v=>{ if(!v) return null; const m=String(v).match(/Date\((\d+),(\d+),(\d+)/); if(m) return new Date(+m[1],+m[2],+m[3]); const d=new Date(String(v).replace(/\./g,'-')); return isNaN(d)?null:d; };
-    const items=data.map(r=>({name:norm(r[cName]),mentor:String(r[cMentor]||'').trim(),join:parseDate(r[cJoin])}))
-      .filter(x=>x.name&&x.join&&x.join>=cutoff&&x.join<=soon).sort((a,b)=>b.join-a.join);
-    if(!items.length){list.innerHTML='<div class="empty">표시할 신규 멤버가 없습니다.</div>';}
+    const items=data.map(r=>({name:norm(r[cName]),mentor:String(r[cMentor]||'').trim(),join:parseDate(r[cJoin]),complete:passportComplete(r[cPassport])}))
+      .filter(x=>x.name&&x.join&&x.join>=cutoff&&x.join<=soon&&!x.complete).sort((a,b)=>b.join-a.join);
+    if(!items.length){list.innerHTML='<div class="empty">표시할 패스포트 미완료 멤버가 없습니다.</div>';}
     else list.innerHTML=items.map(x=>`<div class="row"><div class="mentee">${esc(x.name)}<small>${x.join.getMonth()+1}/${x.join.getDate()} ${x.join>today?'입회 예정':'입회'}</small></div><div class="arr">→</div><div class="mentor">${x.mentor?esc(x.mentor):'<span style="color:#C0392B;font-size:18px">멘토 미지정</span>'}</div></div>`).join('');
-    st.textContent=`시트 기준 ${items.length}명 · 최신`;
+    document.getElementById('date').textContent=today.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})+' 기준';
+    st.textContent=`시트 기준 ${items.length}명 · 최신 · 100% 완료자 제외`;
   }catch(e){
     console.error(e);
     st.textContent='시트를 읽지 못했습니다';
     list.innerHTML='<div class="empty">시트를 읽지 못했습니다. 시트 공유가 "링크가 있는 모든 사용자"인지 확인해 주세요.</div>';
+  }finally{
+    loading=false;
   }
 }
 load();
+setInterval(()=>{if(!document.hidden) load();},60000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden) load();});
 document.getElementById('save').addEventListener('click',async()=>{
   const b=document.getElementById('board'); st.textContent='이미지 만드는 중…';
   const canvas=await html2canvas(b,{scale:2,backgroundColor:'#ffffff'});
