@@ -42,7 +42,7 @@ h1{margin:4px 0 0;font-size:30px;font-weight:900;color:var(--navy)}
   <div class="top"><div><div class="eb">BNI PIONEER · MENTORING TEAM 9기</div><h1>멘토 · 멘티 매칭</h1></div><div class="date" id="date"></div></div>
   <div class="hd"><span>멘티 (신규 멤버)</span><span></span><span>멘토</span></div>
   <div id="list"><div class="empty">불러오는 중…</div></div>
-  <div class="foot"><span>시트와 1분마다 연동 · 패스포트 100% 완료자는 자동 제외</span><span>멘토링 기간: 입회일부터 7개월</span></div>
+  <div class="foot"><span>시트와 1주일마다 연동 · 패스포트 100% 완료자는 자동 제외</span><span>멘토링 기간: 입회일부터 7개월</span></div>
 </div>
 <script>
 const SHEET_ID='1fKbObyuJFYBVDQcQu5KQmmHySIuVblZJBxic-7mIr-M';
@@ -60,6 +60,8 @@ const passportComplete=v=>{
 };
 document.getElementById('date').textContent=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})+' 기준';
 
+const REFRESH_MS=7*24*60*60*1000;
+let lastSynced=0;
 let loading=false;
 async function load(){
   if(loading) return;
@@ -91,6 +93,7 @@ async function load(){
     if(!items.length){list.innerHTML='<div class="empty">표시할 패스포트 미완료 멤버가 없습니다.</div>';}
     else list.innerHTML=items.map(x=>`<div class="row"><div class="mentee">${esc(x.name)}<small>${x.join.getMonth()+1}/${x.join.getDate()} ${x.join>today?'입회 예정':'입회'}</small></div><div class="arr">→</div><div class="mentor">${x.mentor?esc(x.mentor):'<span style="color:#C0392B;font-size:18px">멘토 미지정</span>'}</div></div>`).join('');
     document.getElementById('date').textContent=today.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})+' 기준';
+    lastSynced=Date.now();
     st.textContent=`시트 기준 ${items.length}명 · 최신 · 100% 완료자 제외`;
   }catch(e){
     console.error(e);
@@ -101,8 +104,8 @@ async function load(){
   }
 }
 load();
-setInterval(()=>{if(!document.hidden) load();},60000);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden) load();});
+setInterval(()=>{if(!document.hidden) load();},REFRESH_MS);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-lastSynced>=REFRESH_MS) load();});
 document.getElementById('save').addEventListener('click',async()=>{
   const b=document.getElementById('board'); st.textContent='이미지 만드는 중…';
   const canvas=await html2canvas(b,{scale:2,backgroundColor:'#ffffff'});
