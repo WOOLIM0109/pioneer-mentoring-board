@@ -48,6 +48,9 @@ h1{margin:4px 0 0;font-size:30px;font-weight:900;color:var(--navy)}
 const SHEET_ID='1fKbObyuJFYBVDQcQu5KQmmHySIuVblZJBxic-7mIr-M';
 const SHEET_NAME='시트1';
 const MONTHS=7; // 입회 7개월(210일) 이내만 표시
+// 매칭 보드에서 제외한 멘티와 지정 멘토는 시트 재연동 후에도 유지합니다.
+const EXCLUDED_MENTEES=new Set(['이도현','정상현','윤민수','문성우','마루이','이수민','이해경']);
+const MENTOR_OVERRIDES=new Map([['김여련','김지현']]);
 const st=document.getElementById('st'), list=document.getElementById('list');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const norm=s=>String(s||'').replace(/\s+/g,'');
@@ -88,8 +91,8 @@ async function load(){
     const today=new Date(); const cutoff=new Date(today); cutoff.setMonth(cutoff.getMonth()-MONTHS);
     const soon=new Date(today); soon.setDate(soon.getDate()+60);
     const parseDate=v=>{ if(!v) return null; const m=String(v).match(/Date\((\d+),(\d+),(\d+)/); if(m) return new Date(+m[1],+m[2],+m[3]); const d=new Date(String(v).replace(/\./g,'-')); return isNaN(d)?null:d; };
-    const items=data.map(r=>({name:norm(r[cName]),mentor:String(r[cMentor]||'').trim(),join:parseDate(r[cJoin]),complete:passportComplete(r[cPassport])}))
-      .filter(x=>x.name&&x.join&&x.join>=cutoff&&x.join<=soon&&!x.complete).sort((a,b)=>b.join-a.join);
+    const items=data.map(r=>({name:norm(r[cName]),mentor:MENTOR_OVERRIDES.get(norm(r[cName]))??String(r[cMentor]||'').trim(),join:parseDate(r[cJoin]),complete:passportComplete(r[cPassport])}))
+      .filter(x=>x.name&&!EXCLUDED_MENTEES.has(x.name)&&x.join&&x.join>=cutoff&&x.join<=soon&&!x.complete).sort((a,b)=>b.join-a.join);
     if(!items.length){list.innerHTML='<div class="empty">표시할 패스포트 미완료 멤버가 없습니다.</div>';}
     else list.innerHTML=items.map(x=>`<div class="row"><div class="mentee">${esc(x.name)}<small>${x.join.getMonth()+1}/${x.join.getDate()} ${x.join>today?'입회 예정':'입회'}</small></div><div class="arr">→</div><div class="mentor">${x.mentor?esc(x.mentor):'<span style="color:#C0392B;font-size:18px">멘토 미지정</span>'}</div></div>`).join('');
     document.getElementById('date').textContent=today.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})+' 기준';
