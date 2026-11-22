@@ -122,8 +122,9 @@ async function loadSheet(){
     if(hi<0) throw new Error('헤더(이름·멘토)를 찾지 못함');
     const H=rows[hi].map(norm);
     const cName=H.indexOf('이름'), cMentor=H.indexOf('멘토');
-    const cPassport=27; // AB열: 패스포트 진도율
-    if(json.table.cols.length<=cPassport) throw new Error('AB열 패스포트 진도율을 찾지 못함');
+    // 패스포트 진도율: 헤더에 '패스포트'가 있는 열, 못 찾으면 AA열(26)
+    const cPassport=(()=>{const i=H.findIndex(h=>h.includes('패스포트'));return i>=0?i:26;})();
+    if(json.table.cols.length<=cPassport) throw new Error('패스포트 진도율 열을 찾지 못함');
     const data=rows.slice(hi+1);
     let cJoin=-1; for(let c=cName+1;c<H.length&&cJoin<0;c++){ if(data.some(r=>/^Date\(/.test(String(r[c])))) cJoin=c; }
     if(cJoin<0) throw new Error('가입날짜 열을 찾지 못함');
