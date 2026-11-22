@@ -6,14 +6,18 @@
 <title>멘토 · 멘티 매칭</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
 <style>
-:root{--navy:#1B2A4A;--orange:#F07C1C;--bg:#F3F5F9;--paper:#fff;--ink:#141A2B;--ink2:#5F6880;--line:#D8DEE9;--line2:#ECEFF5}
+:root{--navy:#1B2A4A;--orange:#F07C1C;--bg:#F3F5F9;--paper:#fff;--ink:#141A2B;--ink2:#5F6880;--line:#D8DEE9;--line2:#ECEFF5;--red:#C0392B}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR","Malgun Gothic",sans-serif;padding:16px}
 .tools{max-width:760px;margin:0 auto 14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .tools .st{font-size:13px;color:var(--ink2);margin-right:auto}
-.btn{font:inherit;font-size:15px;font-weight:700;padding:10px 18px;border:0;border-radius:6px;background:var(--orange);color:#fff;cursor:pointer}
+.btn{font:inherit;font-size:15px;font-weight:700;padding:10px 18px;border:0;border-radius:6px;background:var(--orange);color:#fff;cursor:pointer;text-decoration:none}
 .btn.ghost{background:var(--paper);color:var(--ink2);border:1px solid var(--line)}
+.btn.navy{background:var(--navy)}
+.btn.sm{font-size:13px;padding:6px 10px}
 .board{max-width:760px;margin:0 auto;background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:32px 36px}
 .top{border-bottom:5px solid var(--navy);padding-bottom:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
 .eb{font-size:12px;letter-spacing:.14em;color:var(--orange);font-weight:700}
@@ -25,10 +29,27 @@ h1{margin:4px 0 0;font-size:30px;font-weight:900;color:var(--navy)}
 .mentee small{display:block;font-size:13px;font-weight:400;color:var(--ink2);margin-top:2px}
 .arr{text-align:center;color:var(--line);font-size:26px}
 .mentor{font-size:28px;font-weight:900;color:var(--orange)}
-.mentor small{display:block;font-size:13px;font-weight:700;color:var(--ink2);letter-spacing:.08em}
+.mentor .none{color:var(--red);font-size:18px}
+.mentor .warn{display:block;font-size:12px;font-weight:700;color:var(--red);margin-top:2px}
 .hd{display:grid;grid-template-columns:1fr 60px 1fr;padding:10px 4px 6px;font-size:12px;font-weight:700;color:var(--ink2);letter-spacing:.1em}
 .foot{margin-top:18px;padding-top:12px;border-top:1.5px solid var(--line);font-size:13px;color:var(--ink2);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .empty{padding:30px;text-align:center;color:var(--ink2)}
+/* 편집 모드 */
+.ed{display:none}
+body.editing .ed{display:flex}
+body.editing .row{grid-template-columns:1fr 40px 1fr}
+.edrow{gap:6px;align-items:center;margin-top:6px;flex-wrap:wrap}
+.edrow input{font:inherit;font-size:15px;padding:7px 9px;border:1px solid var(--line);border-radius:6px;width:140px}
+.tag{font-size:11px;font-weight:700;color:var(--ink2);background:var(--line2);border-radius:4px;padding:2px 6px}
+.panel{max-width:760px;margin:14px auto 0;background:var(--paper);border:2px dashed var(--line);border-radius:14px;padding:18px 22px;display:none}
+body.editing .panel{display:block}
+.panel h2{font-size:16px;margin:0 0 10px;color:var(--navy)}
+.panel .f{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.panel input{font:inherit;font-size:15px;padding:8px 10px;border:1px solid var(--line);border-radius:6px}
+.panel .ex{display:flex;gap:8px;flex-wrap:wrap}
+.panel .chip{display:inline-flex;gap:6px;align-items:center;background:var(--line2);border-radius:20px;padding:5px 6px 5px 12px;font-size:14px}
+.panel .chip button{border:0;background:var(--paper);border-radius:12px;padding:3px 8px;cursor:pointer;font:inherit;font-size:12px;color:var(--ink2)}
+.panel .hint{font-size:12px;color:var(--ink2);margin:0}
 @media (max-width:520px){.mentee,.mentor{font-size:22px}.row{grid-template-columns:1fr 36px 1fr}.board{padding:22px 18px}}
 </style>
 </head>
@@ -36,39 +57,60 @@ h1{margin:4px 0 0;font-size:30px;font-weight:900;color:var(--navy)}
 <div class="tools">
   <span class="st" id="st">시트에서 불러오는 중…</span>
   <a class="btn ghost" href="./">분담표로</a>
+  <button class="btn navy" id="editBtn" type="button">멘토 변경</button>
   <button class="btn" id="save" type="button">이미지로 저장</button>
 </div>
 <div class="board" id="board">
   <div class="top"><div><div class="eb">BNI PIONEER · MENTORING TEAM 9기</div><h1>멘토 · 멘티 매칭</h1></div><div class="date" id="date"></div></div>
   <div class="hd"><span>멘티 (신규 멤버)</span><span></span><span>멘토</span></div>
   <div id="list"><div class="empty">불러오는 중…</div></div>
-  <div class="foot"><span>시트와 1주일마다 연동 · 패스포트 100% 완료자는 자동 제외</span><span>멘토링 기간: 입회일부터 7개월</span></div>
+  <div class="foot"><span>패스포트 100% 완료자는 자동 제외 · 멘토 1명당 멘티 2명까지</span><span>멘토링 기간: 입회일부터 7개월</span></div>
 </div>
+
+<div class="panel" id="panel">
+  <h2>멘티 직접 추가</h2>
+  <div class="f">
+    <input id="addName" placeholder="멘티 이름" aria-label="멘티 이름">
+    <input id="addJoin" type="date" aria-label="입회일">
+    <input id="addMentor" placeholder="멘토 이름" list="people" aria-label="멘토 이름">
+    <button class="btn sm" id="addBtn" type="button">추가</button>
+  </div>
+  <h2>빠진 멘티</h2>
+  <div class="ex" id="exList"></div>
+  <p class="hint" style="margin-top:12px">여기서 바꾼 멘토·추가·제외는 팀 전체 화면에 바로 반영됩니다. 시트의 멘토 칸은 그대로 두며, 시트 값과 다르게 지정한 경우 '변경됨' 표시가 붙습니다.</p>
+</div>
+<datalist id="people"></datalist>
+
 <script>
 const SHEET_ID='1fKbObyuJFYBVDQcQu5KQmmHySIuVblZJBxic-7mIr-M';
 const SHEET_NAME='시트1';
 const MONTHS=7; // 입회 7개월(210일) 이내만 표시
-// 매칭 보드에서 제외한 멘티와 지정 멘토는 시트 재연동 후에도 유지합니다.
-const EXCLUDED_MENTEES=new Set(['이도현','정상현','윤민수','문성우','마루이','이수민','이해경']);
-const MENTOR_OVERRIDES=new Map([['김여련','김지현']]);
-const st=document.getElementById('st'), list=document.getElementById('list');
+const STATE_KEY='match_state'; // board_links 테이블에 JSON으로 저장
+const MAX_MENTEES=2;
+// 처음 한 번만 쓰는 기본값 (이전 코드에 박혀 있던 제외·지정 내용)
+const SEED={excluded:['이도현','정상현','윤민수','문성우','마루이','이수민','이해경'],mentor:{'김여련':'김지현'},added:[]};
+
+const $=id=>document.getElementById(id);
+const st=$('st'), list=$('list');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const norm=s=>String(s||'').replace(/\s+/g,'');
-// Google Sheets 백분율은 숫자 1(100%)로 전달되며, 텍스트 백분율도 지원합니다.
 const passportComplete=v=>{
   if(v===null||v===undefined||norm(v)==='') return false;
   const value=String(v).replace(/\s+/g,'');
   const number=Number(value.replace(/%$/,''));
   return Number.isFinite(number)&&number>=(value.endsWith('%')?100:1);
 };
-document.getElementById('date').textContent=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})+' 기준';
 
-const REFRESH_MS=7*24*60*60*1000;
-let lastSynced=0;
-let loading=false;
-async function load(){
-  if(loading) return;
-  loading=true;
+let sheetItems=[];      // 시트에서 읽은 멘티 후보
+let allNames=[];        // 시트 전체 이름 (멘토 자동완성용)
+let state=JSON.parse(JSON.stringify(SEED));
+let sb=null, stateLoaded=false, sheetOk=false;
+
+function setDate(){ $('date').textContent=new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})+' 기준'; }
+setDate();
+
+// ---------- 시트 ----------
+async function loadSheet(){
   try{
     const url=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&headers=0&_=${Date.now()}`;
     const response=await fetch(url,{cache:'no-store',signal:AbortSignal.timeout(20000)});
@@ -76,45 +118,142 @@ async function load(){
     const txt=await response.text();
     const json=JSON.parse(txt.substring(txt.indexOf('{'),txt.lastIndexOf('}')+1));
     const rows=json.table.rows.map(r=>(r.c||[]).map(c=>c?(c.f!==undefined&&c.v instanceof Object?c.f:c.v):null));
-    // 헤더 행 찾기
     const hi=rows.findIndex(r=>r.some(v=>norm(v)==='이름')&&r.some(v=>norm(v)==='멘토'));
     if(hi<0) throw new Error('헤더(이름·멘토)를 찾지 못함');
     const H=rows[hi].map(norm);
     const cName=H.indexOf('이름'), cMentor=H.indexOf('멘토');
     const cPassport=27; // AB열: 패스포트 진도율
-    // gviz는 숫자 열의 텍스트 헤더를 null로 전달할 수 있으므로 열 위치로 확인합니다.
     if(json.table.cols.length<=cPassport) throw new Error('AB열 패스포트 진도율을 찾지 못함');
-    // 가입날짜: 이름 오른쪽에서 날짜값이 들어 있는 첫 열
     const data=rows.slice(hi+1);
     let cJoin=-1; for(let c=cName+1;c<H.length&&cJoin<0;c++){ if(data.some(r=>/^Date\(/.test(String(r[c])))) cJoin=c; }
     if(cJoin<0) throw new Error('가입날짜 열을 찾지 못함');
-    const today=new Date(); const cutoff=new Date(today); cutoff.setMonth(cutoff.getMonth()-MONTHS);
-    const soon=new Date(today); soon.setDate(soon.getDate()+60);
-    const parseDate=v=>{ if(!v) return null; const m=String(v).match(/Date\((\d+),(\d+),(\d+)/); if(m) return new Date(+m[1],+m[2],+m[3]); const d=new Date(String(v).replace(/\./g,'-')); return isNaN(d)?null:d; };
-    const items=data.map(r=>({name:norm(r[cName]),mentor:MENTOR_OVERRIDES.get(norm(r[cName]))??String(r[cMentor]||'').trim(),join:parseDate(r[cJoin]),complete:passportComplete(r[cPassport])}))
-      .filter(x=>x.name&&!EXCLUDED_MENTEES.has(x.name)&&x.join&&x.join>=cutoff&&x.join<=soon&&!x.complete).sort((a,b)=>b.join-a.join);
-    if(!items.length){list.innerHTML='<div class="empty">표시할 패스포트 미완료 멤버가 없습니다.</div>';}
-    else list.innerHTML=items.map(x=>`<div class="row"><div class="mentee">${esc(x.name)}<small>${x.join.getMonth()+1}/${x.join.getDate()} ${x.join>today?'입회 예정':'입회'}</small></div><div class="arr">→</div><div class="mentor">${x.mentor?esc(x.mentor):'<span style="color:#C0392B;font-size:18px">멘토 미지정</span>'}</div></div>`).join('');
-    document.getElementById('date').textContent=today.toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})+' 기준';
-    lastSynced=Date.now();
-    st.textContent=`시트 기준 ${items.length}명 · 최신 · 100% 완료자 제외`;
+    allNames=[...new Set(data.map(r=>norm(r[cName])).filter(Boolean))];
+    sheetItems=data.map(r=>({name:norm(r[cName]),sheetMentor:String(r[cMentor]||'').trim(),join:parseDate(r[cJoin]),complete:passportComplete(r[cPassport])}))
+      .filter(x=>x.name&&x.join);
+    sheetOk=true;
   }catch(e){
-    console.error(e);
-    st.textContent='시트를 읽지 못했습니다';
-    list.innerHTML='<div class="empty">시트를 읽지 못했습니다. 시트 공유가 "링크가 있는 모든 사용자"인지 확인해 주세요.</div>';
-  }finally{
-    loading=false;
+    console.error(e); sheetOk=false;
   }
 }
-load();
-setInterval(()=>{if(!document.hidden) load();},REFRESH_MS);
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Date.now()-lastSynced>=REFRESH_MS) load();});
-document.getElementById('save').addEventListener('click',async()=>{
-  const b=document.getElementById('board'); st.textContent='이미지 만드는 중…';
+function parseDate(v){ if(!v) return null; const m=String(v).match(/Date\((\d+),(\d+),(\d+)/); if(m) return new Date(+m[1],+m[2],+m[3]); const d=new Date(String(v).replace(/\./g,'-')); return isNaN(d)?null:d; }
+
+// ---------- 공유 저장소 ----------
+function cleanState(s){
+  return {excluded:Array.isArray(s?.excluded)?s.excluded.map(norm).filter(Boolean):[],
+          mentor:(s&&typeof s.mentor==='object'&&s.mentor)?s.mentor:{},
+          added:Array.isArray(s?.added)?s.added.filter(a=>a&&a.name):[]};
+}
+async function loadState(){
+  if(!sb) return;
+  const {data,error}=await sb.from('board_links').select('url').eq('key',STATE_KEY).maybeSingle();
+  if(error){console.error(error);return;}
+  if(data&&data.url){ try{ state=cleanState(JSON.parse(data.url)); }catch(e){console.error(e);} }
+  else { await saveState(); } // 처음이면 기본값 저장
+  stateLoaded=true;
+}
+async function saveState(){
+  if(!sb){st.textContent='저장소 미연결 — 변경 내용이 저장되지 않습니다';return false;}
+  st.textContent='저장 중…';
+  const {error}=await sb.from('board_links').upsert({key:STATE_KEY,url:JSON.stringify(state)});
+  if(error){console.error(error);st.textContent='저장 실패 — 다시 시도해 주세요';return false;}
+  return true;
+}
+
+// ---------- 화면 ----------
+function currentItems(){
+  const today=new Date(); const cutoff=new Date(today); cutoff.setMonth(cutoff.getMonth()-MONTHS);
+  const soon=new Date(today); soon.setDate(soon.getDate()+60);
+  const ex=new Set(state.excluded);
+  const fromSheet=sheetItems.filter(x=>x.join>=cutoff&&x.join<=soon&&!x.complete);
+  const names=new Set(fromSheet.map(x=>x.name));
+  const extra=state.added.filter(a=>!names.has(norm(a.name))).map(a=>({name:norm(a.name),sheetMentor:'',join:parseDate(a.join)||today,complete:false,added:true}));
+  return [...fromSheet,...extra]
+    .filter(x=>!ex.has(x.name))
+    .map(x=>{const ov=state.mentor[x.name]; const mentor=(ov!==undefined?ov:(x.added?(state.added.find(a=>norm(a.name)===x.name)?.mentor||''):x.sheetMentor)).trim();
+      return {...x,mentor,changed:!x.added&&ov!==undefined&&norm(ov)!==norm(x.sheetMentor)};})
+    .sort((a,b)=>b.join-a.join);
+}
+function render(){
+  const today=new Date();
+  const items=currentItems();
+  const count={}; items.forEach(x=>{if(x.mentor){const k=norm(x.mentor);count[k]=(count[k]||0)+1;}});
+  if(!items.length){list.innerHTML='<div class="empty">표시할 패스포트 미완료 멤버가 없습니다.</div>';}
+  else list.innerHTML=items.map(x=>`<div class="row">
+      <div class="mentee">${esc(x.name)}<small>${x.join.getMonth()+1}/${x.join.getDate()} ${x.join>today?'입회 예정':'입회'}${x.added?' · 직접 추가':''}</small>
+        <div class="ed edrow"><button class="btn ghost sm" data-ex="${esc(x.name)}" type="button">목록에서 빼기</button></div></div>
+      <div class="arr">→</div>
+      <div class="mentor">${x.mentor?esc(x.mentor):'<span class="none">멘토 미지정</span>'}
+        ${x.mentor&&count[norm(x.mentor)]>MAX_MENTEES?`<span class="warn">멘티 ${count[norm(x.mentor)]}명 (최대 ${MAX_MENTEES}명)</span>`:''}
+        <div class="ed edrow"><input data-m="${esc(x.name)}" value="${esc(x.mentor)}" list="people" placeholder="멘토 이름" aria-label="${esc(x.name)} 멘토">
+          <button class="btn sm" data-save="${esc(x.name)}" type="button">저장</button>
+          ${x.changed?`<span class="tag">변경됨 · 시트: ${esc(x.sheetMentor||'없음')}</span> <button class="btn ghost sm" data-reset="${esc(x.name)}" type="button">시트대로</button>`:''}</div></div>
+    </div>`).join('');
+  $('exList').innerHTML=state.excluded.length?state.excluded.map(n=>`<span class="chip">${esc(n)}<button data-back="${esc(n)}" type="button">되돌리기</button></span>`).join(''):'<span class="hint">없음</span>';
+  $('people').innerHTML=allNames.map(n=>`<option value="${esc(n)}">`).join('');
+  setDate();
+  st.textContent=(sheetOk?`멘티 ${items.length}명 · 최신`:'시트를 읽지 못함 — 시트 공유 설정 확인')+(sb?' · 팀 공유 연결됨':' · 저장소 미연결');
+}
+
+// ---------- 편집 동작 ----------
+document.body.addEventListener('click',async e=>{
+  const t=e.target.closest('button'); if(!t) return;
+  if(t.dataset.save!==undefined){
+    const name=t.dataset.save; const v=document.querySelector(`input[data-m="${CSS.escape(name)}"]`).value.trim();
+    const a=state.added.find(x=>norm(x.name)===name);
+    if(a){a.mentor=v; delete state.mentor[name];}
+    else { const base=sheetItems.find(x=>x.name===name); if(base&&norm(base.sheetMentor)===norm(v)) delete state.mentor[name]; else state.mentor[name]=v; }
+    if(await saveState()) render();
+  }else if(t.dataset.reset!==undefined){
+    delete state.mentor[t.dataset.reset]; if(await saveState()) render();
+  }else if(t.dataset.ex!==undefined){
+    const n=t.dataset.ex; if(!state.excluded.includes(n)) state.excluded.push(n);
+    state.added=state.added.filter(a=>norm(a.name)!==n);
+    if(await saveState()) render();
+  }else if(t.dataset.back!==undefined){
+    state.excluded=state.excluded.filter(n=>n!==t.dataset.back); if(await saveState()) render();
+  }
+});
+$('addBtn').addEventListener('click',async()=>{
+  const name=norm($('addName').value), join=$('addJoin').value, mentor=$('addMentor').value.trim();
+  if(!name){$('addName').focus();return;}
+  state.excluded=state.excluded.filter(n=>n!==name);
+  if(sheetItems.some(x=>x.name===name)&&!state.added.some(a=>norm(a.name)===name)&&currentItems().some(x=>x.name===name)){
+    if(mentor) state.mentor[name]=mentor;
+  }else{
+    state.added=state.added.filter(a=>norm(a.name)!==name);
+    state.added.push({name,join:join||new Date().toISOString().slice(0,10),mentor});
+  }
+  if(await saveState()){ $('addName').value='';$('addJoin').value='';$('addMentor').value=''; render(); }
+});
+$('editBtn').addEventListener('click',()=>{
+  const on=document.body.classList.toggle('editing');
+  $('editBtn').textContent=on?'편집 끝내기':'멘토 변경';
+});
+$('save').addEventListener('click',async()=>{
+  const wasEditing=document.body.classList.contains('editing');
+  document.body.classList.remove('editing');
+  const b=$('board'); st.textContent='이미지 만드는 중…';
   const canvas=await html2canvas(b,{scale:2,backgroundColor:'#ffffff'});
   const a=document.createElement('a'); a.download=`멘토멘티_매칭_${new Date().toISOString().slice(0,10)}.png`; a.href=canvas.toDataURL('image/png'); a.click();
+  if(wasEditing) document.body.classList.add('editing');
   st.textContent='저장됨 · 카톡방에 올리세요';
 });
+
+// ---------- 시작 ----------
+async function refreshAll(){ await Promise.all([loadSheet(),loadState()]); render(); }
+(async()=>{
+  if(window.supabase&&window.SUPABASE_URL&&window.SUPABASE_ANON_KEY){
+    sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+    sb.channel('match').on('postgres_changes',{event:'*',schema:'public',table:'board_links',filter:`key=eq.${STATE_KEY}`},async()=>{
+      if(document.activeElement&&document.activeElement.tagName==='INPUT') return; // 입력 중이면 덮어쓰지 않음
+      await loadState(); render();
+    }).subscribe();
+  }
+  await refreshAll();
+})();
+// 시트는 5분마다, 탭으로 돌아올 때마다 다시 읽기
+setInterval(()=>{if(!document.hidden) loadSheet().then(render);},5*60*1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden) loadSheet().then(render);});
 </script>
 </body>
 </html>
